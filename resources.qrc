@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/usb_FILL0_wght400_GRAD0_opsz48.svg</file>
+    <file>icons/cable_FILL0_wght400_GRAD0_opsz48.svg</file>
+    <file>icons/stop_FILL0_wght400_GRAD0_opsz48.svg</file>
+    <file>icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg</file>
+    <file>icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg</file>
+    <file>icons/play_arrow_FILL0_wght400_GRAD0_opsz48.svg</file>
+  </qresource>
+  <qresource prefix="images">
+    <file>images/logo.png</file>
+    <file>images/svg-editor-image (1).svg</file>
+    <file>images/logo_gray.png</file>
+    <file>images/EXELL_TECH_logo_RGB.svg</file>
+  </qresource>
+</RCC>
