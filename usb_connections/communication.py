@@ -5,10 +5,12 @@ import time
 import ctypes
 import usb.core
 import usb.util
+from time import localtime, strftime
 from collections import deque
 from PySide6.QtCore import Qt, QTimer, Slot
 
-sensor_name = {0xBD: "Датчик шума", 0xBC: "Термопара", 0xBA: "Датчик тока", 0xBE: "Датчик пульса", 0xBB: "Мультидатчик"}
+sensor_name = {0xBD: "Датчик шума", 0xBC: "Термопара", 0xBA: "Датчик тока",
+               0xBE: "Датчик пульса", 0xBB: "Мультидатчик", 0xBF: "Датчик ультрафиолета"}
 index_to_cmd = {0: 0x12, 1: 0x13, 2: 0x14, 3: 0x15, 4: 0x16, 5: 0x17, 6: 0x18, 7: 0x19}
 
 
@@ -56,22 +58,27 @@ class DlmmUSB:
     def check_device(self) -> bool:
         try:
             dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
+            # print(dev)
             if dev is self.device and dev is not None:
                 return True
             if not dev:
                 self.device = None
                 return False
             if self.device is None:
-                self.device = dev
-            # print(self.device)
-            reattach = False
-            if self.device.is_kernel_driver_active(0):
-                reattach = True
-                self.device.detach_kernel_driver(0)
 
-            cfg = usb.util.find_descriptor(self.device, bConfigurationValue=1)
-            cfg.set()
-            return True
+                self.device = dev
+
+                # print(self.device)
+                reattach = False
+                if self.device.is_kernel_driver_active(0):
+                    reattach = True
+                    self.device.detach_kernel_driver(0)
+
+                cfg = usb.util.find_descriptor(self.device, bConfigurationValue=1)
+                cfg.set()
+                time.sleep(0.5)
+                self.set_date()
+                return True
         except ValueError:
             print('check_device Timeout error')
             self.device = None
@@ -148,6 +155,7 @@ class DlmmUSB:
             try:
                 if self.start_condition == 0:
                     self.set_start_condition(0x20)
+                # print(index_to_cmd[sensor.id])
                 self.device.write(0x1, [0x21, index_to_cmd[sensor.id]], 1000)
                 ret = self.device.read(0x81, 8, 1000)
                 data = (ctypes.c_char*4)()
@@ -156,17 +164,42 @@ class DlmmUSB:
                 data[2] = ret[6]
                 data[3] = ret[7]
                 data_f = struct.unpack('f', bytes(data))
+                data_v = round(data_f[0], 2)
+                if ret[2] == 0xBE and int(data_v) == -999:
+                    data_v = 0.0
                 # print(ret)
-                # print(round(data_f[0], 2))
-                return round(data_f[0], 2)
+                return data_v
             except usb.core.USBTimeoutError:
                 print("get_data_from_sensor Timeout error")
                 return 0.0
             except usb.core.USBError:
+                print("USB ERR get data")
                 self.device = None
                 return 0.0
             except AttributeError:
+                print("ATTRIBUTE ERR get data")
                 return 0.0
+
+    def set_date(self):
+        date = localtime()
+        yy = date.tm_year % 100
+        mm = date.tm_mon
+        dd = date.tm_mday
+        HH = date.tm_hour
+        MM = date.tm_min
+        SS = date.tm_sec
+        DOW = date.tm_wday
+        # print(yy, mm, dd, HH, MM, SS, DOW)
+        try:
+            self.device.write(0x1, [0x22, 0x23, yy, mm, dd, HH, MM, SS, DOW], 1000)
+            ret = self.device.read(0x81, 3, 1000)
+        except usb.core.USBTimeoutError as e:
+            print(f"set_date Timeout error {e}")
+        except usb.core.USBError as e:
+            print(f"USB ERR set date {e}")
+        except AttributeError:
+            print("ATTRIBUTE ERR set date")
+
 
 
 

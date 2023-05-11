@@ -299,6 +299,8 @@ class MainWindow(QMainWindow):
                 self.sensor_btns[i].setText(f'{i+1} {self.sensors[i].name}')
                 self.sensors[i].id = i
                 self.sensors[i].connected = True
+                self.sensor_btns_start[i].setEnabled(True)
+                self.sensor_btns_stop[i].setEnabled(True)
                 self.sensors[i].name = self.sensors[i].name
                 self.sensor_names[i].setText(self.sensors[i].name)
             else:
@@ -308,6 +310,9 @@ class MainWindow(QMainWindow):
                 self.sensor_btns_start[i].setEnabled(False)
                 self.sensor_btns_stop[i].setEnabled(False)
                 self.sensors[i].id = i
+                if self.timers[i].isActive():
+                    self.timers[i].stop()
+                    self.sensors[i].running = False
         if True not in [i.running for i in self.sensors]:
             if self.dl.start_condition:
                 self.dl.set_start_condition(0x21)
