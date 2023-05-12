@@ -70,7 +70,8 @@ class DlmmUSB:
             if platform == "linux" or platform == "linux2":
                 # print(f"LINUX {platform}")
                 dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
-                dev.set_configuration()
+
+                #dev.set_configuration()
             elif platform == "win32":
                 # print(f"WINDOWS {platform}")
                 dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid)
