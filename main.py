@@ -242,6 +242,9 @@ class MainWindow(QMainWindow):
         # print('check_device_connection')
         self.dl.get_available_sensors(self.sensors)
         self.check_connections()
+        if self.dl.first_connection:
+            self.dl.set_date()
+            self.dl.first_connection = False
         # print(self.dl.device)
         if self.dl.device is not None:
             self.ui.label_15.setStyleSheet("""background-color: #00AE68""")

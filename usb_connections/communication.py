@@ -3,8 +3,11 @@ import random
 import struct
 import time
 import ctypes
+
+import libusb_package
 import usb.core
 import usb.util
+import usb.backend.libusb1
 from time import localtime, strftime
 from collections import deque
 from PySide6.QtCore import Qt, QTimer, Slot
@@ -54,10 +57,30 @@ class DlmmUSB:
         self.vid = vid
         self.device = None
         self.start_condition = 0
+        self.first_connection: bool = True
 
     def check_device(self) -> bool:
         try:
-            dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
+            #backend = usb.backend.libusb1.get_backend(find_library=lambda x: "/usr/lib/libusb-1.0.so")
+            #libusb1_backend = usb.backend.libusb1.get_backend(find_library=libusb_package.find_library)
+            dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid)
+            #print(dev)
+            #dev.set_configuration()
+
+            # get an endpoint instance
+            #cfg = dev.get_active_configuration()
+            #intf = cfg[(0, 0)]
+
+            '''ep = usb.util.find_descriptor(
+                intf,
+                # match the first OUT endpoint
+                custom_match= \
+                    lambda e: \
+                        usb.util.endpoint_direction(e.bEndpointAddress) == \
+                        usb.util.ENDPOINT_OUT)
+            print(ep)'''
+            #print(dev)
+            # dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
             # print(dev)
             if dev is self.device and dev is not None:
                 return True
@@ -65,22 +88,23 @@ class DlmmUSB:
                 self.device = None
                 return False
             if self.device is None:
-
+                self.first_connection = True
+                print(type(dev))
                 self.device = dev
-
+                print(self.device)
                 # print(self.device)
-                reattach = False
+                '''reattach = False
                 if self.device.is_kernel_driver_active(0):
                     reattach = True
-                    self.device.detach_kernel_driver(0)
+                    self.device.detach_kernel_driver(0)'''
 
                 cfg = usb.util.find_descriptor(self.device, bConfigurationValue=1)
                 cfg.set()
-                time.sleep(0.5)
-                self.set_date()
+                time.sleep(1)
+                # self.set_date()
                 return True
-        except ValueError:
-            print('check_device Timeout error')
+        except ValueError as e:
+            print(f'check_device Timeout error {e}')
             self.device = None
             return False
         except usb.core.USBError as e:
@@ -100,8 +124,9 @@ class DlmmUSB:
             self.start_condition = ret[2]
         except usb.core.USBTimeoutError:
             print('Write Timeout error')
-        except usb.core.USBError:
+        except usb.core.USBError as e:
             self.device = None
+            print(f"USB ERR get_start_condition {e}")
 
     def set_start_condition(self, cond: int = 0x21):
         if self.device is None:
@@ -115,8 +140,9 @@ class DlmmUSB:
             self.start_condition = ret[2]
         except usb.core.USBTimeoutError:
             print('set_start_condition Timeout error')
-        except usb.core.USBError:
+        except usb.core.USBError as e:
             self.device = None
+            print(f'set_start_condition usb error {e}')
 
     def get_available_sensors(self, sensors: list[Sensor]):
         if self.device is None:
@@ -128,7 +154,8 @@ class DlmmUSB:
         try:
             #self.device.write(0x1, [ReportId.REPORT_OUT, UsbCmd.SENSOR_NUM], 1000)
             self.device.write(0x1, [0x21, 0x11], 1000)
-            ret = self.device.read(0x81, 10, 1000)
+            ret = self.device.read(0x81, 64, 1000)
+            print(ret)
             if ret[1] == 17:
                 for i, s in enumerate(sensors):
                     if ret[i+2] != 0:
@@ -142,8 +169,9 @@ class DlmmUSB:
                     #print(i, s.connected)
         except usb.core.USBTimeoutError:
             print("get_available_sensors Timeout error")
-        except usb.core.USBError:
+        except usb.core.USBError as e:
             self.device = None
+            print(f"get_available_sensors usb error {e}")
         except AttributeError:
             pass
 
@@ -172,8 +200,8 @@ class DlmmUSB:
             except usb.core.USBTimeoutError:
                 print("get_data_from_sensor Timeout error")
                 return 0.0
-            except usb.core.USBError:
-                print("USB ERR get data")
+            except usb.core.USBError as e:
+                print(f"USB ERR get data {e}")
                 self.device = None
                 return 0.0
             except AttributeError:
@@ -192,7 +220,8 @@ class DlmmUSB:
         # print(yy, mm, dd, HH, MM, SS, DOW)
         try:
             self.device.write(0x1, [0x22, 0x23, yy, mm, dd, HH, MM, SS, DOW], 1000)
-            ret = self.device.read(0x81, 3, 1000)
+            ret = self.device.read(0x81, 64, 1000)
+            print(ret)
         except usb.core.USBTimeoutError as e:
             print(f"set_date Timeout error {e}")
         except usb.core.USBError as e:
