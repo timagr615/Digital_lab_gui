@@ -3,6 +3,7 @@ import random
 import struct
 import time
 import ctypes
+from sys import platform
 
 import libusb_package
 import usb.core
@@ -61,24 +62,19 @@ class DlmmUSB:
 
     def check_device(self) -> bool:
         try:
-            #backend = usb.backend.libusb1.get_backend(find_library=lambda x: "/usr/lib/libusb-1.0.so")
-            #libusb1_backend = usb.backend.libusb1.get_backend(find_library=libusb_package.find_library)
-            dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid)
+            dev = None
+            #dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
             #print(dev)
-            #dev.set_configuration()
+            # dev.set_configuration()
+            if platform == "linux" or platform == "linux2":
+                print(f"LINUX {platform}")
+                dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
+                dev.set_configuration()
+            elif platform == "win32":
+                print(f"WINDOWS {platform}")
+                dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid)
 
-            # get an endpoint instance
-            #cfg = dev.get_active_configuration()
-            #intf = cfg[(0, 0)]
 
-            '''ep = usb.util.find_descriptor(
-                intf,
-                # match the first OUT endpoint
-                custom_match= \
-                    lambda e: \
-                        usb.util.endpoint_direction(e.bEndpointAddress) == \
-                        usb.util.ENDPOINT_OUT)
-            print(ep)'''
             #print(dev)
             # dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
             # print(dev)
@@ -97,10 +93,15 @@ class DlmmUSB:
                 if self.device.is_kernel_driver_active(0):
                     reattach = True
                     self.device.detach_kernel_driver(0)'''
+                if platform == "linux" or platform == "linux2":
+                    reattach = False
+                    if self.device.is_kernel_driver_active(0):
+                        reattach = True
+                        self.device.detach_kernel_driver(0)
 
                 cfg = usb.util.find_descriptor(self.device, bConfigurationValue=1)
                 cfg.set()
-                time.sleep(1)
+                # time.sleep(1)
                 # self.set_date()
                 return True
         except ValueError as e:
