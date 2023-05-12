@@ -38,6 +38,7 @@ class UsbCmd(enum.Enum):
     START = 0x20
     STOP = 0x21
     START_CONDITION = 0x22
+    SET_DATE = 0x23
 
 
 class Sensor:
@@ -67,11 +68,11 @@ class DlmmUSB:
             #print(dev)
             # dev.set_configuration()
             if platform == "linux" or platform == "linux2":
-                print(f"LINUX {platform}")
+                # print(f"LINUX {platform}")
                 dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
                 dev.set_configuration()
             elif platform == "win32":
-                print(f"WINDOWS {platform}")
+                # print(f"WINDOWS {platform}")
                 dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid)
 
 
@@ -85,9 +86,9 @@ class DlmmUSB:
                 return False
             if self.device is None:
                 self.first_connection = True
-                print(type(dev))
+                #print(type(dev))
                 self.device = dev
-                print(self.device)
+                #print(self.device)
                 # print(self.device)
                 '''reattach = False
                 if self.device.is_kernel_driver_active(0):
@@ -121,7 +122,7 @@ class DlmmUSB:
 
         try:
             self.device.write(0x1, [ReportId.REPORT_OUT, UsbCmd.START_CONDITION], 1000)
-            ret = self.device.read(0x81, 3, 1000)
+            ret = self.device.read(0x81, 64, 1000)
             self.start_condition = ret[2]
         except usb.core.USBTimeoutError:
             print('Write Timeout error')
@@ -136,11 +137,11 @@ class DlmmUSB:
         try:
             #print('set start cond')
             self.device.write(0x1, [0x21, cond], 1000)
-            ret = self.device.read(0x81, 3, 1000)
-            #print(f'start cond {ret}')
+            ret = self.device.read(0x81, 64, 1000)
+            # print(f'start cond {ret}')
             self.start_condition = ret[2]
-        except usb.core.USBTimeoutError:
-            print('set_start_condition Timeout error')
+        except usb.core.USBTimeoutError as e:
+            print(f'set_start_condition Timeout error {e}')
         except usb.core.USBError as e:
             self.device = None
             print(f'set_start_condition usb error {e}')
@@ -156,7 +157,7 @@ class DlmmUSB:
             #self.device.write(0x1, [ReportId.REPORT_OUT, UsbCmd.SENSOR_NUM], 1000)
             self.device.write(0x1, [0x21, 0x11], 1000)
             ret = self.device.read(0x81, 64, 1000)
-            print(ret)
+            # print(ret)
             if ret[1] == 17:
                 for i, s in enumerate(sensors):
                     if ret[i+2] != 0:
@@ -186,7 +187,7 @@ class DlmmUSB:
                     self.set_start_condition(0x20)
                 # print(index_to_cmd[sensor.id])
                 self.device.write(0x1, [0x21, index_to_cmd[sensor.id]], 1000)
-                ret = self.device.read(0x81, 8, 1000)
+                ret = self.device.read(0x81, 64, 1000)
                 data = (ctypes.c_char*4)()
                 data[0] = ret[4]
                 data[1] = ret[5]
