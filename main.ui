@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1180</width>
-    <height>816</height>
+    <height>1079</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -69,6 +69,23 @@ background-color: #e6eaef;
 border-radius: 5px;
 
 }
+
+#label_sd_detect {
+border-right: 1px solid #586178	;
+}
+#label_sd_size {
+border-right: 1px solid #586178	;
+}
+#label_sd_date{
+border-right: 1px solid #586178	;
+}
+#frame_sd_sensors{
+border-top: 1px solid #586178	;
+}
+#frame_sd_plot{
+border-top: 1px solid #586178	;
+}
+
 #frame {
 border: 1px solid #586178	;
 border-radius: 8px;
@@ -106,6 +123,46 @@ border-right: 1px solid #586178	;
 border-top: 1px solid #586178	;
 }
 
+#frame_sens_2{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_3{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_4{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_5{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_6{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_7{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_8{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_9{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_10{
+border-top: 1px solid #586178	;
+}
+
+#frame_sens_11{
+border-top: 1px solid #586178	;
+}
+
 #frame_25{
 border-top: 1px solid #586178	;
 }
@@ -122,6 +179,18 @@ border-top: 1px solid #586178	;
 border-top: 1px solid #586178	;
 }
 #frame_30{
+border-top: 1px solid #586178	;
+}
+
+#frame_55{
+border-top: 1px solid #586178	;
+}
+
+#frame_56{
+border-top: 1px solid #586178	;
+}
+
+#frame_6{
 border-top: 1px solid #586178	;
 }
 
@@ -219,7 +288,42 @@ border-right: 1px solid #586178	;
 border-right: 1px solid #586178	;
 }
 #frame_53{
+border-right: 1px solid #586178	;
+}
 
+#frame_60{
+border-right: 1px solid #586178	;
+}
+
+#frame_67{
+border-right: 1px solid #586178	;
+}
+
+#frame_61{
+border-right: 1px solid #586178	;
+}
+
+#frame_57{
+border-right: 1px solid #586178	;
+}
+
+#frame_58{
+border-right: 1px solid #586178	;
+}
+
+#frame_59{
+border-right: 1px solid #586178	;
+}
+
+#frame_65{
+border-right: 1px solid #586178	;
+}
+
+#frame_63{
+border-right: 1px solid #586178	;
+}
+
+#frame_64{
 border-right: 1px solid #586178	;
 }
 
@@ -501,6 +605,95 @@ background-color: #00AE68;
   background-color: #00bf06	;
   border: 3px solid #9ac3fe;
 }
+
+#btn_stop_9{
+background-color: #FF7373;
+}
+#btn_stop_9::pressed
+{
+	background-color: #bf0600;
+
+}
+
+#btn_stop_9::hover,
+#btn_stop_9::focus {
+  background-color: #bf0600	;
+  border: 3px solid #9ac3fe;
+}
+#btn_start_9 {
+background-color: #00AE68;
+}
+#btn_start_9::pressed
+{
+	background-color: #ff4747;
+
+}
+
+#btn_start_9::hover,
+#btn_start_9::focus {
+  background-color: #00bf06	;
+  border: 3px solid #9ac3fe;
+}
+
+#btn_stop_10{
+background-color: #FF7373;
+}
+#btn_stop_10::pressed
+{
+	background-color: #bf0600;
+
+}
+
+#btn_stop_10::hover,
+#btn_stop_10::focus {
+  background-color: #bf0600	;
+  border: 3px solid #9ac3fe;
+}
+#btn_start_10 {
+background-color: #00AE68;
+}
+#btn_start_10::pressed
+{
+	background-color: #ff4747;
+
+}
+
+#btn_start_10::hover,
+#btn_start_10::focus {
+  background-color: #00bf06	;
+  border: 3px solid #9ac3fe;
+}
+
+#btn_stop_11{
+background-color: #FF7373;
+}
+#btn_stop_11::pressed
+{
+	background-color: #bf0600;
+
+}
+
+#btn_stop_11::hover,
+#btn_stop_11::focus {
+  background-color: #bf0600	;
+  border: 3px solid #9ac3fe;
+}
+#btn_start_11 {
+background-color: #00AE68;
+}
+#btn_start_11::pressed
+{
+	background-color: #ff4747;
+
+}
+
+#btn_start_11::hover,
+#btn_start_11::focus {
+  background-color: #00bf06	;
+  border: 3px solid #9ac3fe;
+}
+
+
 </string>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -586,25 +779,6 @@ background-color: #00AE68;
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <widget class="QLabel" name="label_7">
-              <property name="maximumSize">
-               <size>
-                <width>45</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="resources.qrc">:/icons/icons/cable_FILL0_wght400_GRAD0_opsz48.svg</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="btn_conn_1">
               <property name="enabled">
                <bool>true</bool>
@@ -613,7 +787,7 @@ background-color: #00AE68;
                <string notr="true"/>
               </property>
               <property name="text">
-               <string>Разъём 1</string>
+               <string>Датчик 1</string>
               </property>
              </widget>
             </item>
@@ -622,31 +796,12 @@ background-color: #00AE68;
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
-             <widget class="QLabel" name="label_8">
-              <property name="maximumSize">
-               <size>
-                <width>45</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="resources.qrc">:/icons/icons/cable_FILL0_wght400_GRAD0_opsz48.svg</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="btn_conn_2">
               <property name="enabled">
                <bool>true</bool>
               </property>
               <property name="text">
-               <string>Разъём 2</string>
+               <string>Датчик 2</string>
               </property>
              </widget>
             </item>
@@ -655,31 +810,12 @@ background-color: #00AE68;
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
-             <widget class="QLabel" name="label_9">
-              <property name="maximumSize">
-               <size>
-                <width>45</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="resources.qrc">:/icons/icons/cable_FILL0_wght400_GRAD0_opsz48.svg</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="btn_conn_3">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Разъём 3</string>
+               <string>Датчик 3</string>
               </property>
              </widget>
             </item>
@@ -688,31 +824,12 @@ background-color: #00AE68;
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_11">
             <item>
-             <widget class="QLabel" name="label_10">
-              <property name="maximumSize">
-               <size>
-                <width>45</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="resources.qrc">:/icons/icons/cable_FILL0_wght400_GRAD0_opsz48.svg</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="btn_conn_4">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Разъём 4</string>
+               <string>Датчик 4</string>
               </property>
              </widget>
             </item>
@@ -721,31 +838,12 @@ background-color: #00AE68;
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_12">
             <item>
-             <widget class="QLabel" name="label_11">
-              <property name="maximumSize">
-               <size>
-                <width>45</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="resources.qrc">:/icons/icons/cable_FILL0_wght400_GRAD0_opsz48.svg</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="btn_conn_5">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Разъём 5</string>
+               <string>Датчик 5</string>
               </property>
              </widget>
             </item>
@@ -754,31 +852,12 @@ background-color: #00AE68;
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_13">
             <item>
-             <widget class="QLabel" name="label_12">
-              <property name="maximumSize">
-               <size>
-                <width>45</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="resources.qrc">:/icons/icons/cable_FILL0_wght400_GRAD0_opsz48.svg</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="btn_conn_6">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Разъём 6</string>
+               <string>Датчик 6</string>
               </property>
              </widget>
             </item>
@@ -787,31 +866,12 @@ background-color: #00AE68;
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_14">
             <item>
-             <widget class="QLabel" name="label_13">
-              <property name="maximumSize">
-               <size>
-                <width>45</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="resources.qrc">:/icons/icons/cable_FILL0_wght400_GRAD0_opsz48.svg</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="btn_conn_7">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Разъём 7</string>
+               <string>Датчик 7</string>
               </property>
              </widget>
             </item>
@@ -820,35 +880,41 @@ background-color: #00AE68;
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_15">
             <item>
-             <widget class="QLabel" name="label_14">
-              <property name="maximumSize">
-               <size>
-                <width>45</width>
-                <height>40</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="resources.qrc">:/icons/icons/cable_FILL0_wght400_GRAD0_opsz48.svg</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="btn_conn_8">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Разъём 8</string>
+               <string>Датчик 8</string>
               </property>
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_35">
+            <item>
+             <widget class="QPushButton" name="btn_conn_9">
+              <property name="text">
+               <string>Датчик 9</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_conn_10">
+            <property name="text">
+             <string>Датчик 10</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_conn_11">
+            <property name="text">
+             <string>Датчик 11</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -857,6 +923,13 @@ background-color: #00AE68;
         <widget class="QPushButton" name="btn_all_sensors">
          <property name="text">
           <string>Все датчики</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_sd_data">
+         <property name="text">
+          <string>Данные с карты памяти</string>
          </property>
         </widget>
        </item>
@@ -913,7 +986,7 @@ background-color: #00AE68;
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="one_sensor">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1192,9 +1265,15 @@ background-color: #00AE68;
           </layout>
          </widget>
          <widget class="QWidget" name="all_sensors">
-          <layout class="QVBoxLayout" name="verticalLayout_7">
+          <layout class="QVBoxLayout" name="verticalLayout_40">
            <item>
-            <widget class="QFrame" name="frame_15">
+            <widget class="QFrame" name="frame_sens_1">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -1303,8 +1382,8 @@ background-color: #00AE68;
                   <widget class="QPushButton" name="btn_start_1">
                    <property name="minimumSize">
                     <size>
-                     <width>50</width>
-                     <height>50</height>
+                     <width>0</width>
+                     <height>0</height>
                     </size>
                    </property>
                    <property name="maximumSize">
@@ -1322,8 +1401,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1345,8 +1424,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1358,7 +1437,13 @@ background-color: #00AE68;
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_22">
+            <widget class="QFrame" name="frame_sens_2">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -1474,8 +1559,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1497,8 +1582,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1510,7 +1595,13 @@ background-color: #00AE68;
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_25">
+            <widget class="QFrame" name="frame_sens_3">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -1626,8 +1717,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1649,8 +1740,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1662,7 +1753,13 @@ background-color: #00AE68;
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_26">
+            <widget class="QFrame" name="frame_sens_4">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -1778,8 +1875,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1801,8 +1898,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1814,7 +1911,13 @@ background-color: #00AE68;
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_27">
+            <widget class="QFrame" name="frame_sens_5">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -1930,8 +2033,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1953,8 +2056,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -1966,7 +2069,13 @@ background-color: #00AE68;
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_29">
+            <widget class="QFrame" name="frame_sens_6">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -2082,8 +2191,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -2105,8 +2214,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -2118,7 +2227,13 @@ background-color: #00AE68;
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_28">
+            <widget class="QFrame" name="frame_sens_7">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -2234,8 +2349,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -2257,8 +2372,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -2270,7 +2385,13 @@ background-color: #00AE68;
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_30">
+            <widget class="QFrame" name="frame_sens_8">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -2386,8 +2507,8 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -2409,8 +2530,488 @@ background-color: #00AE68;
                    </property>
                    <property name="iconSize">
                     <size>
-                     <width>40</width>
-                     <height>40</height>
+                     <width>35</width>
+                     <height>35</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_sens_9">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_37">
+              <item>
+               <widget class="QFrame" name="frame_60">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <item>
+                  <widget class="QLabel" name="label_name_9">
+                   <property name="font">
+                    <font>
+                     <family>OpenSans-Regular</family>
+                     <pointsize>16</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Название 9</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_67">
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_33">
+                 <item>
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>Частота, Гц</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_hz_9">
+                   <property name="text">
+                    <string>1</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_61">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_32">
+                 <item>
+                  <widget class="QLabel" name="label_value_9">
+                   <property name="font">
+                    <font>
+                     <family>OpenSans-Regular</family>
+                     <pointsize>16</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Значение</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_62">
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_39">
+                 <item>
+                  <widget class="QPushButton" name="btn_start_9">
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/icons/icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg</normaloff>:/icons/icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>35</width>
+                     <height>35</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn_stop_9">
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/icons/icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg</normaloff>:/icons/icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>35</width>
+                     <height>35</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_sens_10">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_36">
+              <item>
+               <widget class="QFrame" name="frame_57">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_37">
+                 <item>
+                  <widget class="QLabel" name="label_name_10">
+                   <property name="font">
+                    <font>
+                     <family>OpenSans-Regular</family>
+                     <pointsize>16</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Название 10</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_58">
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_38">
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Частота, Гц</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_hz_10">
+                   <property name="text">
+                    <string>1</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_59">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_39">
+                 <item>
+                  <widget class="QLabel" name="label_value_10">
+                   <property name="font">
+                    <font>
+                     <family>OpenSans-Regular</family>
+                     <pointsize>16</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Значение</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_68">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_41">
+                 <item>
+                  <widget class="QPushButton" name="btn_start_10">
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/icons/icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg</normaloff>:/icons/icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>35</width>
+                     <height>35</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn_stop_10">
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/icons/icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg</normaloff>:/icons/icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>35</width>
+                     <height>35</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_sens_11">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>80</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_38">
+              <item>
+               <widget class="QFrame" name="frame_65">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_36">
+                 <item>
+                  <widget class="QLabel" name="label_name_11">
+                   <property name="font">
+                    <font>
+                     <family>OpenSans-Regular</family>
+                     <pointsize>16</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Название 11</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_63">
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_34">
+                 <item>
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>Частота, Гц</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit_hz_11">
+                   <property name="text">
+                    <string>1</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_64">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_35">
+                 <item>
+                  <widget class="QLabel" name="label_value_11">
+                   <property name="font">
+                    <font>
+                     <family>OpenSans-Regular</family>
+                     <pointsize>16</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Значение</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_66">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_40">
+                 <item>
+                  <widget class="QPushButton" name="btn_start_11">
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/icons/icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg</normaloff>:/icons/icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>35</width>
+                     <height>35</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn_stop_11">
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/icons/icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg</normaloff>:/icons/icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>35</width>
+                     <height>35</height>
                     </size>
                    </property>
                   </widget>
@@ -2423,12 +3024,206 @@ background-color: #00AE68;
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="sd_page">
+          <layout class="QVBoxLayout" name="verticalLayout_41">
+           <item>
+            <widget class="QFrame" name="frame_sd_info">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_42">
+              <item>
+               <widget class="QLabel" name="label_sd_detect">
+                <property name="text">
+                 <string>Карта памяти обнаружена </string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_sd_date">
+                <property name="text">
+                 <string>Карта пуста</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_sd_size">
+                <property name="text">
+                 <string>0 байт</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_sd_download">
+                <property name="text">
+                 <string>Скачать</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_sd_sensors">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_2">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="btn_sd_1">
+                <property name="text">
+                 <string>Датчик 1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="btn_sd_2">
+                <property name="text">
+                 <string>Датчик 2</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="btn_sd_3">
+                <property name="text">
+                 <string>Датчик 3</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QPushButton" name="btn_sd_4">
+                <property name="text">
+                 <string>Датчик 4</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="4">
+               <widget class="QPushButton" name="btn_sd_5">
+                <property name="text">
+                 <string>Датчик 5</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="5">
+               <widget class="QPushButton" name="btn_sd_6">
+                <property name="text">
+                 <string>Датчик 6</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="btn_sd_7">
+                <property name="text">
+                 <string>Датчик 7</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="btn_sd_8">
+                <property name="text">
+                 <string>Датчик 8</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="btn_sd_9">
+                <property name="text">
+                 <string>Датчик 9</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QPushButton" name="btn_sd_10">
+                <property name="text">
+                 <string>Датчик 10</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="4">
+               <widget class="QPushButton" name="btn_sd_11">
+                <property name="text">
+                 <string>Датчик 11</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_sd_plot">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_43">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_3"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1180</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
  </widget>
  <resources>
