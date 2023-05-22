@@ -48,19 +48,32 @@ class UsbCmd(enum.Enum):
     SET_DATE = 0x23
 
 
+class SdFile:
+    def __init__(self, date: datetime, fb: int, lb: int, size: float, fb_b: list[int], lb_b: list[int]):
+        self.date: datetime = date
+        self.fb: int = fb
+        self.lb: int = lb
+        self.size: float = size
+        self.fb_b: list[int] = fb_b
+        self.lb_b: list[int] = lb_b
+
+
 class SensorSd:
     def __init__(self, index: int):
         self.id: int = index
         self.available: bool = False
-        self.who_am_i: int | None = 0
+        self.who_am_i: int | None = None
         self.name: str | None = None
         self.x: list = []
         self.y: list = []
 
     def parse_first_sd_data(self, data):
         id_to_data_idx = 5*self.id + 9
+        # print(id_to_data_idx)
         wai = data[id_to_data_idx]
+
         if wai != 0:
+            #print(data)
             self.available = True
             self.who_am_i = wai
             self.name = sensor_name[self.who_am_i]
@@ -73,13 +86,20 @@ class SensorSd:
             datac[3] = data[id_to_data_idx + 4]
             data_f = struct.unpack('f', bytes(datac))
             data_v = round(data_f[0], 2)
+            # print(self.x, self.y)
             self.y.append(data_v)
             self.x.append(0)
 
     def parse_sd_data(self, data):
         id_to_data_idx = 5 * self.id + 9
+        # print(f'parse sd data {id_to_data_idx} {data}')
+        # print(id_to_data_idx)
         wai = data[id_to_data_idx]
         if wai != 0:
+            if wai != self.who_am_i:
+                return
+            self.available = True
+            self.name = sensor_name[self.who_am_i]
             datac = (ctypes.c_char * 4)()
             datac[0] = data[id_to_data_idx + 1]
             datac[1] = data[id_to_data_idx + 2]
@@ -87,8 +107,15 @@ class SensorSd:
             datac[3] = data[id_to_data_idx + 4]
             data_f = struct.unpack('f', bytes(datac))
             data_v = round(data_f[0], 2)
+            # print(self.who_am_i)
+            if not self.x:
+                self.x.append(0)
+            else:
+                self.x.append(self.x[-1] + 1)
+            if self.who_am_i == 0xBE:
+                if data_v < -1:
+                    data_v = 0
             self.y.append(data_v)
-            self.x.append(self.x[-1]+1)
 
 
 class Sensor:
@@ -102,6 +129,7 @@ class Sensor:
         self.unit: str = ""
         self.x: list = list(range(100))
         self.y: list = [0 for _ in range(100)]
+
 
 
 class DlmmUSB:
@@ -118,6 +146,8 @@ class DlmmUSB:
         self.sd_last_block = 2
         self.sd_last_data_size = 0
         self.data_downloaded: bool = False
+        self.sd_files: list = []
+        self.stop = 0
 
     def check_device(self) -> bool:
         try:
@@ -215,6 +245,8 @@ class DlmmUSB:
 
         try:
             # self.device.write(0x1, [ReportId.REPORT_OUT, UsbCmd.SENSOR_NUM], 1000)
+            if self.stop:
+                return
             self.device.write(0x1, [0x21, 0x11], 1000)
             ret = self.device.read(0x81, 64, 1000)
             # print(f'sensors {ret}')
@@ -238,12 +270,14 @@ class DlmmUSB:
         except AttributeError:
             pass
 
-    def get_data_from_sensor(self, sensor: Sensor) -> float:
+    def get_data_from_sensor(self, sensor: Sensor) -> float | None:
         if self.device is None:
             self.check_device()
         if self.device is not None and sensor.connected:
             # print('sens get data')
             try:
+                if self.stop == 1:
+                    return
                 if self.start_condition == 0:
                     self.set_start_condition(0x20)
                 # print(index_to_cmd[sensor.id])
@@ -296,31 +330,41 @@ class DlmmUSB:
         try:
             self.device.write(0x1, [0x21, 0x27], 1000)
             ret = self.device.read(0x81, 64, 1000)
+            print(ret)
+            self.sd_files.clear()
+
+            data = (ctypes.c_char * 4)()
+            for i in range(4):
+                if ret[8+i*14] == 0 or ret[9+i*14] == 0:
+                    continue
+                date = datetime(year=2000 + ret[7 + i*14],
+                                month=ret[8 + i*14],
+                                day=ret[9 + i*14],
+                                hour=ret[10 + i*14],
+                                minute=ret[11 + i*14],
+                                second=ret[12 + i*14])
+                data[0] = ret[13 + i*14]
+                data[1] = ret[14 + i*14]
+                data[2] = ret[15 + i*14]
+                data[3] = ret[16 + i*14]
+                fb = struct.unpack('I', bytes(data))[0]
+                data[0] = ret[17 + i*14]
+                data[1] = ret[18 + i*14]
+                data[2] = ret[19 + i*14]
+                data[3] = ret[20 + i*14]
+                lb = struct.unpack('I', bytes(data))[0]
+                size = round((lb - fb) * 496 / 1024, 2)
+                # print(date)
+                self.sd_files.append(SdFile(date, fb, lb, size,
+                                            [ret[13 + i*14], ret[14 + i*14], ret[15 + i*14], ret[16 + i*14]],
+                                            [ret[17 + i*14], ret[18 + i*14], ret[19 + i*14], ret[20 + i*14]]))
+
             self.sd_checked = True
-            if ret[3] == 0 or ret[4] == 0 or ret[5] == 0:
-                self.sd_last_data = None
-            else:
-                self.sd_last_data = datetime(year=ret[3]+2000, month=ret[4], day=ret[5])
-            if ret[2] == 1:
-                self.sd_empty = True
+            if len(self.sd_files) == 0:
+                self.sd_empty = 1
             else:
                 self.sd_empty = False
-            data = (ctypes.c_char * 4)()
-            data[0] = ret[6]
-            data[1] = ret[7]
-            data[2] = ret[8]
-            data[3] = ret[9]
-            data_f = struct.unpack('I', bytes(data))
-            self.sd_first_block = data_f[0]
-            data[0] = ret[10]
-            data[1] = ret[11]
-            data[2] = ret[12]
-            data[3] = ret[13]
-            data_f = struct.unpack('I', bytes(data))
-            self.sd_last_block = data_f[0]
-            self.sd_last_data_size = round((self.sd_last_block - self.sd_first_block)*496/1024, 2)
-            print(self.sd_last_data_size)
-            print(ret)
+
         except usb.core.USBTimeoutError as e:
             print(f"get_sd_info Timeout error {e}")
         except usb.core.USBError as e:
@@ -328,19 +372,61 @@ class DlmmUSB:
         except AttributeError:
             print("ATTRIBUTE ERR get_sd_info")
 
-    def get_sd_data(self, sensors: list[SensorSd]):
+    def get_sd_data(self, sensors: list[SensorSd], index: int):
+        for i in sensors:
+            i.available = False
         try:
+            self.device.write(0x1, [0x23, 0x30,
+                                    self.sd_files[index].fb_b[0], self.sd_files[index].fb_b[1],
+                                    self.sd_files[index].fb_b[2], self.sd_files[index].fb_b[3],
+                                    self.sd_files[index].lb_b[0], self.sd_files[index].lb_b[1],
+                                    self.sd_files[index].lb_b[2], self.sd_files[index].lb_b[3]], 1000)
+            ret = self.device.read(0x81, 64, 1000)
+
             self.device.write(0x1, [0x21, 0x28], 1000)
             ret = self.device.read(0x81, 64, 1000)
+            self.stop = 1
+            time.sleep(1)
+            # print(ret)
+            #if ret[0] == 16:
             for i in sensors:
                 i.parse_first_sd_data(ret)
             while ret[1] != 1:
+
                 self.device.write(0x1, [0x21, 0x28], 2000)
                 ret = self.device.read(0x81, 64, 1000)
-                for i in sensors:
-                    i.parse_sd_data(ret)
-            print(sensors[0].y)
+                # print(ret)
+                if ret[0] == 16:
+                    for i in sensors:
+                        i.parse_sd_data(ret)
+            #print(sensors[0].y)
+            self.stop = 0
+            '''for i in sensors:
+                print(i.y)'''
             self.data_downloaded = True
+        except usb.core.USBTimeoutError as e:
+            print(f"set_date Timeout error {e}")
+        except usb.core.USBError as e:
+            print(f"USB ERR set date {e}")
+        except AttributeError:
+            print("ATTRIBUTE ERR set date")
+
+    def send_exit(self):
+        try:
+            self.device.write(0x1, [0x21, 0x29], 1000)
+            ret = self.device.read(0x81, 64, 1000)
+            # print(ret)
+        except usb.core.USBTimeoutError as e:
+            print(f"set_date Timeout error {e}")
+        except usb.core.USBError as e:
+            print(f"USB ERR set date {e}")
+        except AttributeError:
+            print("ATTRIBUTE ERR set date")
+
+    def send_who_am_i(self, who_am_i: int):
+        try:
+            self.device.write(0x1, [0x24, 0x31, who_am_i], 1000)
+            ret = self.device.read(0x81, 64, 1000)
         except usb.core.USBTimeoutError as e:
             print(f"set_date Timeout error {e}")
         except usb.core.USBError as e:

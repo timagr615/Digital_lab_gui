@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-    QLabel, QLineEdit, QMainWindow, QMenuBar,
-    QPushButton, QSizePolicy, QSpacerItem, QStackedWidget,
-    QToolBar, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
+    QHBoxLayout, QLabel, QLineEdit, QMainWindow,
+    QMenuBar, QPushButton, QSizePolicy, QSpacerItem,
+    QStackedWidget, QToolBar, QVBoxLayout, QWidget)
 import resources_rc
 
 class Ui_MainWindow(object):
@@ -39,6 +39,41 @@ class Ui_MainWindow(object):
 "border: none;\n"
 "\n"
 "}\n"
+"\n"
+"#comboBox{\n"
+"border: 1px solid #ced4da;\n"
+"border-radius: 4px;\n"
+"padding-left: 10px;\n"
+"}\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"#comboBox::on {\n"
+"border: 4px solid #c2dbfe;\n"
+"}\n"
+"\n"
+"#comboBox QListView {\n"
+"font-size: 12px;\n"
+"border: 1px solid rgba(0,0,0,10%);\n"
+"padding: 5px;\n"
+"background-color: #fff;\n"
+"outline: 0px;\n"
+"}\n"
+"\n"
+"#comboBox QListView::item {\n"
+"padding-left: 10px;\n"
+"background-color: #fff;\n"
+"}\n"
+"\n"
+"#comboBox QListView::item::hover {\n"
+"background-color: #1e90ff;\n"
+"}\n"
+"\n"
+"#comboBox QListView::item::selected {\n"
+"background-color: #1e90ff;\n"
+"}\n"
+"\n"
 "#label_15{\n"
 "border-radius: 3px;\n"
 "background-color: rgba(236, 50, 50, 1);\n"
@@ -57,7 +92,8 @@ class Ui_MainWindow(object):
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
-"#btn_start {\n"
+"#btn_"
+                        "start {\n"
 "background-color: #00AE68;\n"
 "}\n"
 "#btn_start::pressed\n"
@@ -85,8 +121,7 @@ class Ui_MainWindow(object):
 "border-right: 1px solid #586178	;\n"
 "}\n"
 "#label_sd_size {\n"
-"border-right: 1px"
-                        " solid #586178	;\n"
+"border-right: 1px solid #586178	;\n"
 "}\n"
 "#label_sd_date{\n"
 "border-right: 1px solid #586178	;\n"
@@ -107,7 +142,8 @@ class Ui_MainWindow(object):
 "border-radius: 8px;\n"
 "}\n"
 "#frame_14{\n"
-"border-top: 1px solid #586178	;\n"
+"border-top: 1px solid #58617"
+                        "8	;\n"
 "}\n"
 "#frame_7{\n"
 "\n"
@@ -147,8 +183,7 @@ class Ui_MainWindow(object):
 "border-top: 1px solid #586178	;\n"
 "}\n"
 "\n"
-"#frame_"
-                        "sens_5{\n"
+"#frame_sens_5{\n"
 "border-top: 1px solid #586178	;\n"
 "}\n"
 "\n"
@@ -173,7 +208,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#frame_sens_11{\n"
-"border-top: 1px solid #586178	;\n"
+"border-"
+                        "top: 1px solid #586178	;\n"
 "}\n"
 "\n"
 "#frame_25{\n"
@@ -209,8 +245,7 @@ class Ui_MainWindow(object):
 "\n"
 "#frame_16{\n"
 "\n"
-"border-right: 1p"
-                        "x solid #586178	;\n"
+"border-right: 1px solid #586178	;\n"
 "}\n"
 "#frame_17{\n"
 "\n"
@@ -237,7 +272,8 @@ class Ui_MainWindow(object):
 "\n"
 "border-right: 1px solid #586178	;\n"
 "}\n"
-"#frame_32{\n"
+""
+                        "#frame_32{\n"
 "\n"
 "border-right: 1px solid #586178	;\n"
 "}\n"
@@ -275,8 +311,7 @@ class Ui_MainWindow(object):
 "}\n"
 "#frame_48{\n"
 "\n"
-"border-right"
-                        ": 1px solid #586178	;\n"
+"border-right: 1px solid #586178	;\n"
 "}\n"
 "#frame_49{\n"
 "\n"
@@ -302,7 +337,8 @@ class Ui_MainWindow(object):
 "\n"
 "border-right: 1px solid #586178	;\n"
 "}\n"
-"#frame_53{\n"
+"#"
+                        "frame_53{\n"
 "border-right: 1px solid #586178	;\n"
 "}\n"
 "\n"
@@ -339,8 +375,7 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#frame_64{\n"
-"border-right: 1px "
-                        "solid #586178	;\n"
+"border-right: 1px solid #586178	;\n"
 "}\n"
 "\n"
 "QPushButton\n"
@@ -369,7 +404,8 @@ class Ui_MainWindow(object):
 "\n"
 "}\n"
 "QPushButton {\n"
-"  background-color: #0d6efd;\n"
+"  background-color:"
+                        " #0d6efd;\n"
 "  color: #fff;\n"
 "  font-weight: 600;\n"
 "  border-radius: 8px;\n"
@@ -401,8 +437,7 @@ class Ui_MainWindow(object):
 "#btn_start_1 {\n"
 "background-color: #00AE68;\n"
 "}\n"
-""
-                        "#btn_start_1::pressed\n"
+"#btn_start_1::pressed\n"
 "{\n"
 "	background-color: #ff4747;\n"
 "\n"
@@ -426,7 +461,8 @@ class Ui_MainWindow(object):
 "\n"
 "#btn_stop_2::hover,\n"
 "#btn_stop_2::focus {\n"
-"  background-color: #bf0600	;\n"
+"  background-color: "
+                        "#bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
 "#btn_start_2 {\n"
@@ -461,8 +497,7 @@ class Ui_MainWindow(object):
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
 "#btn_start_3 {\n"
-"backgro"
-                        "und-color: #00AE68;\n"
+"background-color: #00AE68;\n"
 "}\n"
 "#btn_start_3::pressed\n"
 "{\n"
@@ -487,7 +522,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#btn_stop_4::hover,\n"
-"#btn_stop_4::focus {\n"
+"#btn_stop_4::fo"
+                        "cus {\n"
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
@@ -521,8 +557,7 @@ class Ui_MainWindow(object):
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
-"#"
-                        "btn_start_5 {\n"
+"#btn_start_5 {\n"
 "background-color: #00AE68;\n"
 "}\n"
 "#btn_start_5::pressed\n"
@@ -546,7 +581,8 @@ class Ui_MainWindow(object):
 "\n"
 "}\n"
 "\n"
-"#btn_stop_6::hover,\n"
+"#btn_stop_6::hover,"
+                        "\n"
 "#btn_stop_6::focus {\n"
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
@@ -578,8 +614,7 @@ class Ui_MainWindow(object):
 "#btn_stop_7::hover,\n"
 "#btn_stop_7::focus {\n"
 "  background-color: #bf0600	;\n"
-"  border: 3px solid #9ac3"
-                        "fe;\n"
+"  border: 3px solid #9ac3fe;\n"
 "}\n"
 "#btn_start_7 {\n"
 "background-color: #00AE68;\n"
@@ -606,7 +641,8 @@ class Ui_MainWindow(object):
 "\n"
 "}\n"
 "\n"
-"#btn_stop_8::hover,\n"
+""
+                        "#btn_stop_8::hover,\n"
 "#btn_stop_8::focus {\n"
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
@@ -638,8 +674,7 @@ class Ui_MainWindow(object):
 "#btn_stop_9::hover,\n"
 "#btn_stop_9::focus {\n"
 "  background-color: #bf0600	;\n"
-"  bor"
-                        "der: 3px solid #9ac3fe;\n"
+"  border: 3px solid #9ac3fe;\n"
 "}\n"
 "#btn_start_9 {\n"
 "background-color: #00AE68;\n"
@@ -662,7 +697,8 @@ class Ui_MainWindow(object):
 "#btn_stop_10::pressed\n"
 "{\n"
 "	background-color: #bf0600;\n"
-"\n"
+""
+                        "\n"
 "}\n"
 "\n"
 "#btn_stop_10::hover,\n"
@@ -696,8 +732,7 @@ class Ui_MainWindow(object):
 "\n"
 "#btn_stop_11::hover,\n"
 "#btn_stop_11::focus {\n"
-"  background"
-                        "-color: #bf0600	;\n"
+"  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
 "#btn_start_11 {\n"
@@ -2043,6 +2078,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_42.addItem(self.horizontalSpacer_2)
 
+        self.comboBox = QComboBox(self.frame_sd_info)
+        self.comboBox.setObjectName(u"comboBox")
+        self.comboBox.setMinimumSize(QSize(200, 0))
+        self.comboBox.setMaximumSize(QSize(1500, 16777215))
+
+        self.horizontalLayout_42.addWidget(self.comboBox)
+
         self.btn_sd_download = QPushButton(self.frame_sd_info)
         self.btn_sd_download.setObjectName(u"btn_sd_download")
 
@@ -2145,6 +2187,21 @@ class Ui_MainWindow(object):
         self.toolBar = QToolBar(MainWindow)
         self.toolBar.setObjectName(u"toolBar")
         MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar)
+        self.toolBar_2 = QToolBar(MainWindow)
+        self.toolBar_2.setObjectName(u"toolBar_2")
+        MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar_2)
+        self.toolBar_3 = QToolBar(MainWindow)
+        self.toolBar_3.setObjectName(u"toolBar_3")
+        MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar_3)
+        self.toolBar_4 = QToolBar(MainWindow)
+        self.toolBar_4.setObjectName(u"toolBar_4")
+        MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar_4)
+        self.toolBar_5 = QToolBar(MainWindow)
+        self.toolBar_5.setObjectName(u"toolBar_5")
+        MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar_5)
+        self.toolBar_6 = QToolBar(MainWindow)
+        self.toolBar_6.setObjectName(u"toolBar_6")
+        MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar_6)
 
         self.retranslateUi(MainWindow)
 
@@ -2262,5 +2319,10 @@ class Ui_MainWindow(object):
         self.btn_sd_10.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0447\u0438\u043a 10", None))
         self.btn_sd_11.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0447\u0438\u043a 11", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
+        self.toolBar_2.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar_2", None))
+        self.toolBar_3.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar_3", None))
+        self.toolBar_4.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar_4", None))
+        self.toolBar_5.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar_5", None))
+        self.toolBar_6.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar_6", None))
     # retranslateUi
 

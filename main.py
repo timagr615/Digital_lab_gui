@@ -18,7 +18,6 @@ from chart import Chart
 import pyqtgraph as pg
 from usb_connections import communication
 
-
 QtGui.QImageReader.setAllocationLimit(0)
 
 shadow_elements = {
@@ -26,15 +25,20 @@ shadow_elements = {
     "frame_2",
 }
 
+wai = [0xBD, 0xBA, 0xBE,
+       0xBC, 0xBF, 0xBB,
+       0xB1, 0xB2, 0xB3]
+
 
 class Downloader(QThread):
-    def __init__(self, usb: communication.DlmmUSB, sensors: list[communication.SensorSd]):
+    def __init__(self, usb: communication.DlmmUSB, sensors: list[communication.SensorSd], index: int):
         super().__init__()
         self._usb = usb
         self._sensors = sensors
+        self._index = index
 
     def run(self):
-        self._usb.get_sd_data(self._sensors)
+        self._usb.get_sd_data(self._sensors, self._index)
 
 
 class MainWindow(QMainWindow):
@@ -68,12 +72,12 @@ class MainWindow(QMainWindow):
         self.x_plot = list(range(1000))
         self.y_plot = list(range(1000))
         self.graphWidget.setBackground('w')
-        #self.label = pg.LabelItem(text='test', justify='right')
+        # self.label = pg.LabelItem(text='test', justify='right')
 
         self.pen = pg.mkPen(color=(255, 0, 0), width=2)
         # self.data_line = self.graphWidget.addPlot(self.x_plot, self.y_plot, pen=self.pen)
         self.data_line = self.graphWidget.plot(self.x_plot, self.y_plot, pen=self.pen)
-        #self.graphWidget.addItem(self.label)
+        # self.graphWidget.addItem(self.label)
         self.graphWidget.showGrid(x=True, y=True, alpha=1.0)
         self.vLine = pg.InfiniteLine(angle=90, movable=False)
         self.hLine = pg.InfiniteLine(angle=0, movable=False)
@@ -96,16 +100,18 @@ class MainWindow(QMainWindow):
         self.connection_timer.timeout.connect(self.check_device_connection)
         self.connection_timer.start()
         self.names_of_sensor = ["Датчик шума", "Термопара", "Датчик тока",
-                "Датчик пульса", "Датчик света", "Датчик ультрафиолета",
-                "Датчик давления", "Датчик влажности", "Датчик температуры"]
+                                "Датчик пульса", "Датчик света", "Датчик ультрафиолета",
+                                "Датчик давления", "Датчик влажности", "Датчик температуры"]
         self.sensor_btns = [self.ui.btn_conn_1, self.ui.btn_conn_2, self.ui.btn_conn_3, self.ui.btn_conn_4,
                             self.ui.btn_conn_5, self.ui.btn_conn_6, self.ui.btn_conn_7, self.ui.btn_conn_8,
                             self.ui.btn_conn_9, self.ui.btn_conn_10, self.ui.btn_conn_11]
         self.sensor_names = [self.ui.label_name_1, self.ui.label_name_2, self.ui.label_name_3, self.ui.label_name_4,
                              self.ui.label_name_5, self.ui.label_name_6, self.ui.label_name_7, self.ui.label_name_8,
                              self.ui.label_name_9, self.ui.label_name_10, self.ui.label_name_11]
-        self.sensor_values = [self.ui.label_value_1, self.ui.label_value_2, self.ui.label_value_3, self.ui.label_value_4,
-                              self.ui.label_value_5, self.ui.label_value_6, self.ui.label_value_7, self.ui.label_value_8,
+        self.sensor_values = [self.ui.label_value_1, self.ui.label_value_2, self.ui.label_value_3,
+                              self.ui.label_value_4,
+                              self.ui.label_value_5, self.ui.label_value_6, self.ui.label_value_7,
+                              self.ui.label_value_8,
                               self.ui.label_value_9, self.ui.label_value_10, self.ui.label_value_11]
         self.sensor_btns_start = [self.ui.btn_start_1, self.ui.btn_start_2, self.ui.btn_start_3,
                                   self.ui.btn_start_4, self.ui.btn_start_5, self.ui.btn_start_6,
@@ -127,10 +133,13 @@ class MainWindow(QMainWindow):
         self.btns_sd = [self.ui.btn_sd_1, self.ui.btn_sd_2, self.ui.btn_sd_3, self.ui.btn_sd_4,
                         self.ui.btn_sd_5, self.ui.btn_sd_6, self.ui.btn_sd_7, self.ui.btn_sd_8,
                         self.ui.btn_sd_9, self.ui.btn_sd_10, self.ui.btn_sd_11]
+        #self.ui.btn_sd_10.setVisible(False)
+        #self.ui.btn_sd_11.setVisible(False)
         self.last_btn_clicked = 0
         self.ui.btn_start.clicked.connect(self.btn_start_action)
         self.ui.btn_stop.clicked.connect(self.btn_stop_action)
         self.ui.lineEdit.textChanged.connect(self.edit_hz_one_action)
+        self.ui.comboBox.activated.connect(self.comboactivated)
         for i in self.btns_sd:
             i.clicked.connect(self.btns_sd_action)
         for i in self.sensor_edits_hz:
@@ -168,22 +177,35 @@ class MainWindow(QMainWindow):
             if sender is j:
                 idx = i
         # print(f'btn idx {idx} clicked')
-        self.x_plot_sd = np.linspace(min(self.sensors[idx].x), max(self.sensors[idx].x), 1000)
-        # print(self.sensors_sd[idx].x)
-        # print(self.sensors_sd[idx].y)
+        self.x_plot_sd = np.linspace(min(self.sensors_sd[idx].x), max(self.sensors_sd[idx].x), 1000)
+
+        #print(self.sensors_sd[idx].x)
+        #print(self.sensors_sd[idx].y)
         spl = make_interp_spline(self.sensors_sd[idx].x, self.sensors_sd[idx].y, 3)
 
         self.y_plot_sd = spl(self.x_plot_sd)
         self.data_line_sd.setData(self.x_plot_sd, self.y_plot_sd)
+        # print(self.x_plot_sd, self.y_plot_sd)
         self.graphWidget_sd.setXRange(int(self.x_plot_sd[0]), int(self.x_plot_sd[-1]), padding=None, update=True)
 
     def btn_download_action(self):
-        self.downloader = Downloader(self.dl, self.sensors_sd)
+        for idx in range(len(self.timers)):
+            if self.timers[idx].isActive():
+                self.timers[idx].stop()
+                self.sensors[idx].running = False
+        for i in self.btns_sd:
+            i.setEnabled(False)
+        for i in self.sensors_sd:
+            i.x.clear()
+            i.y.clear()
+        index = self.ui.comboBox.currentIndex()
+        self.downloader = Downloader(self.dl, self.sensors_sd, index)
         self.downloader.finished.connect(self.download_finished)
         self.downloader.start()
         # self.dl.get_sd_data(self.sensors_sd)
 
     def download_finished(self):
+        self.ui.btn_sd_download.setEnabled(False)
         for i, j in enumerate(self.sensors_sd):
             if j.available:
                 # self.btns_sd[i].setVisible(True)
@@ -191,14 +213,33 @@ class MainWindow(QMainWindow):
                 self.btns_sd[i].setText(j.name)
         del self.downloader
 
+    def comboactivated(self, index):
+        self.ui.label_sd_detect.setText(f'Выбран {index+1} файл')
+        self.ui.label_sd_date.setText(self.sender().itemText(index))
+        self.ui.label_sd_size.setText(f'{self.dl.sd_files[index].size} кб')
+        self.ui.btn_sd_download.setEnabled(True)
+
     def btn_sd_data_action(self):
+        self.ui.btn_sd_download.setEnabled(False)
         if not self.dl.data_downloaded:
             for i in self.btns_sd:
                 i.setEnabled(False)
                 # i.setVisible(False)
         self.dl.get_sd_info()
-        if self.dl.sd_empty:
-            self.ui.btn_sd_download.setEnabled(False)
+        # print(self.ui.comboBox.currentIndex())
+        for i in range(self.ui.comboBox.count()):
+            # print(i)
+            self.ui.comboBox.removeItem(self.ui.comboBox.currentIndex())
+        for i, j in enumerate(self.dl.sd_files):
+            time = j.date.strftime('%Y-%m-%d %H:%M:%S')
+            self.ui.comboBox.addItem(f'{time}')
+        if self.dl.sd_empty != 1:
+            files = len(self.dl.sd_files)
+            if files == 4 or files == 1:
+                self.ui.label_sd_detect.setText(f'На карте {len(self.dl.sd_files) } файл')
+            else:
+                self.ui.label_sd_detect.setText(f'На карте {len(self.dl.sd_files)} файла')
+            self.ui.label_sd_date.setText('Выберите файл')
         if self.dl.sd_last_data is not None:
             date_sd = self.dl.sd_last_data.strftime('%Y-%m-%d')
             self.ui.label_sd_date.setText('Последняя запись ' + date_sd)
@@ -206,7 +247,7 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentWidget(self.ui.sd_page)
 
     def clock(self):
-        #print(localtime())
+        # print(localtime())
         curr_time = strftime("%H:%M:%S %Y-%m-%d", localtime())
         self.ui.label_16.setText(curr_time)
 
@@ -215,14 +256,14 @@ class MainWindow(QMainWindow):
         pos = evt
         mousePoint = self.vb_sd.mapSceneToView(pos)
         index = mousePoint.x()
-        y_ind = round((index-self.x_plot_sd[0])*10)+10
+        y_ind = round((index - self.x_plot_sd[0]) * 10) + 10
         if y_ind >= 1000:
             y_ind = 999
         elif y_ind <= 0:
             y_ind = 0
         y_val = round(self.y_plot_sd[y_ind], 2)
         self.graphWidget_sd.setTitle(f"<span style='font-size: 12pt'>x={round(index, 2)}, "
-            f"<span style='color: red'>y={y_val}</span>")
+                                     f"<span style='color: red'>y={y_val}</span>")
         self.vLine_sd.setPos(mousePoint.x())
         self.hLine_sd.setPos(mousePoint.y())
 
@@ -231,27 +272,27 @@ class MainWindow(QMainWindow):
         pos = evt
         mousePoint = self.vb.mapSceneToView(pos)
         index = mousePoint.x()
-        y_ind = round((index-self.x_plot[0])*10)+10
+        y_ind = round((index - self.x_plot[0]) * 10) + 10
         if y_ind >= 1000:
             y_ind = 999
         elif y_ind <= 0:
             y_ind = 0
         y_val = round(self.y_plot[y_ind], 2)
         self.graphWidget.setTitle(f"<span style='font-size: 12pt'>x={round(index, 2)}, "
-            f"<span style='color: red'>y={y_val}</span>")
+                                  f"<span style='color: red'>y={y_val}</span>")
         self.vLine.setPos(mousePoint.x())
         self.hLine.setPos(mousePoint.y())
 
     @staticmethod
     def example_func(x):
-        return math.sin(x*3) + 4*math.sin(x)
+        return math.sin(x * 3) + 4 * math.sin(x)
 
     def update_data(self, i: int):
         self.sensors[i].x = self.sensors[i].x[1:]
         self.sensors[i].x.append(self.sensors[i].x[-1] + 1)
         self.sensors[i].y = self.sensors[i].y[1:]
         data = self.dl.get_data_from_sensor(self.sensors[i])
-        #print(data)
+        # print(data)
         # self.sensors[i].y.append(self.example_func(self.sensors[i].x[-1]))
         self.sensors[i].y.append(data)
         # print(sum(self.sensors[i].y[-50:])/len(self.sensors[i].y[-50:]))
@@ -260,14 +301,14 @@ class MainWindow(QMainWindow):
         spl = make_interp_spline(self.sensors[i].x, self.sensors[i].y, 3)
         self.y_plot = spl(self.x_plot)
         # print(self.x_plot[999], self.y_plot[999])
-        #self.sensor_values[i].setText(str(self.sensors[i].y[-1]))
-        #print(self.sensors[i].y)
-        #self.data_line.setData(self.sensors[i].x, self.sensors[i].y)
+        # self.sensor_values[i].setText(str(self.sensors[i].y[-1]))
+        # print(self.sensors[i].y)
+        # self.data_line.setData(self.sensors[i].x, self.sensors[i].y)
 
     def edit_hz_one_action(self):
         sender = self.sender()
         try:
-            #print(f"new hz: {sender.text()}")
+            # print(f"new hz: {sender.text()}")
             new_hz = int(sender.text())
 
         except ValueError:
@@ -293,7 +334,7 @@ class MainWindow(QMainWindow):
             sender.setText(str(new_hz))
         self.sensors[idx].frequency = new_hz
         # print(int(1/new_hz*1000))
-        self.timers[idx].setInterval(int(1/new_hz*1000))
+        self.timers[idx].setInterval(int(1 / new_hz * 1000))
 
     def btn_start_one_sensor(self):
         # print(self.sender)
@@ -330,14 +371,14 @@ class MainWindow(QMainWindow):
         if self.sensors[idx].running:
             self.update_data(idx)
         if self.last_btn_clicked == idx:
-            #print(self.x_plot[0])
+            # print(self.x_plot[0])
             # print(self.sensors[idx].unit)
             self.ui.label_sensor_value.setText(f'{round(self.sensors[idx].y[-1], 2)} {self.sensors[idx].unit}')
-            #self.data_line.setData(self.sensors[idx].x, self.sensors[idx].y)
+            # self.data_line.setData(self.sensors[idx].x, self.sensors[idx].y)
             self.data_line.setData(self.x_plot, self.y_plot)
             self.graphWidget.setXRange(int(self.x_plot[0]), int(self.x_plot[-1]), padding=None, update=True)
         self.sensor_values[idx].setText(f'{round(self.sensors[idx].y[-1], 2)} {self.sensors[idx].unit}')
-        #if self.ui.stackedWidget.currentWidget() is self.ui.one_sensor:
+        # if self.ui.stackedWidget.currentWidget() is self.ui.one_sensor:
 
     def check_device_connection(self):
         # print('check_device_connection')
@@ -358,35 +399,36 @@ class MainWindow(QMainWindow):
     def btn_all_sensors_action(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.all_sensors)
         for i, j in enumerate(self.sensor_edits_hz):
-            #print(self.sensors[i].frequency)
+            # print(self.sensors[i].frequency)
             j.setText(str(self.sensors[i].frequency))
 
     def btn_sensor_action(self):
-        #print(self.sender().text())
+        # print(self.sender().text())
         sender = 0
         for i in self.names_of_sensor:
             # print(j, self.sender().text())
             for k, j in enumerate(self.sensors):
                 if j.name == self.sender().text():
                     sender = k
-        #print(self.sender().text())
+        # print(self.sender().text())
         # sender = int(self.sender().text().split()[0]) - 1
         # print(sender)
+        self.dl.send_who_am_i(self.sensors[sender].who_am_i)
         self.last_btn_clicked = sender
         self.ui.stackedWidget.setCurrentWidget(self.ui.one_sensor)
-        #print(self.last_btn_clicked, self.sensors[sender].y)
+        # print(self.last_btn_clicked, self.sensors[sender].y)
         self.ui.label_sensor_name.setText(self.sensors[sender].name)
         self.ui.lineEdit.setText(str(self.sensors[self.last_btn_clicked].frequency))
         self.data_line.setData(self.sensors[sender].x, self.sensors[sender].y)
 
-        #self.data_line.setData(self.x_plot, self.y_plot)
+        # self.data_line.setData(self.x_plot, self.y_plot)
         if self.timers[sender].isActive():
 
             self.ui.label_sensor_value.setText(f'{round(self.sensors[sender].y[-1], 2)}')
 
         else:
             self.ui.label_sensor_value.setText("------")
-        #print(f"btn {self.sender().text()} checked")
+        # print(f"btn {self.sender().text()} checked")
 
     def btn_start_action(self):
         # print(self.last_btn_clicked)
@@ -419,7 +461,7 @@ class MainWindow(QMainWindow):
                 self.sensors[i].name = self.sensors[i].name
                 self.sensor_names[i].setText(self.sensors[i].name)
             else:
-                self.sensor_btns[i].setText(f'{i+1} датчик')
+                self.sensor_btns[i].setText(f'{i + 1} датчик')
                 self.sensor_btns[i].setVisible(False)
                 self.sensor_frames[i].setVisible(False)
                 self.sensor_names[i].setText("Не подключен")
@@ -459,6 +501,9 @@ class MainWindow(QMainWindow):
             effect.setYOffset(0)
             effect.setColor(QColor(0, 0, 0, 50))
             getattr(self.ui, x).setGraphicsEffect(effect)
+
+    def closeEvent(self, event):
+        self.dl.send_exit()
 
 
 if __name__ == "__main__":

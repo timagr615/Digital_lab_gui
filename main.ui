@@ -28,6 +28,41 @@ font-family: OpenSans-Regular;
 border: none;
 
 }
+
+#comboBox{
+border: 1px solid #ced4da;
+border-radius: 4px;
+padding-left: 10px;
+}
+
+
+
+
+#comboBox::on {
+border: 4px solid #c2dbfe;
+}
+
+#comboBox QListView {
+font-size: 12px;
+border: 1px solid rgba(0,0,0,10%);
+padding: 5px;
+background-color: #fff;
+outline: 0px;
+}
+
+#comboBox QListView::item {
+padding-left: 10px;
+background-color: #fff;
+}
+
+#comboBox QListView::item::hover {
+background-color: #1e90ff;
+}
+
+#comboBox QListView::item::selected {
+background-color: #1e90ff;
+}
+
 #label_15{
 border-radius: 3px;
 background-color: rgba(236, 50, 50, 1);
@@ -986,7 +1021,7 @@ background-color: #00AE68;
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="one_sensor">
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -3076,6 +3111,22 @@ background-color: #00AE68;
                </spacer>
               </item>
               <item>
+               <widget class="QComboBox" name="comboBox">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>1500</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="btn_sd_download">
                 <property name="text">
                  <string>Скачать</string>
@@ -3217,6 +3268,61 @@ background-color: #00AE68;
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_2">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_3">
+   <property name="windowTitle">
+    <string>toolBar_3</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_4">
+   <property name="windowTitle">
+    <string>toolBar_4</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_5">
+   <property name="windowTitle">
+    <string>toolBar_5</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_6">
+   <property name="windowTitle">
+    <string>toolBar_6</string>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>

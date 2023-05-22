@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/down.svg</file>
     <file>icons/usb_FILL0_wght400_GRAD0_opsz48.svg</file>
     <file>icons/cable_FILL0_wght400_GRAD0_opsz48.svg</file>
     <file>icons/stop_FILL0_wght400_GRAD0_opsz48.svg</file>
