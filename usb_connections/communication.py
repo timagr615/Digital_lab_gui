@@ -434,6 +434,17 @@ class DlmmUSB:
         except AttributeError:
             print("ATTRIBUTE ERR set date")
 
+    def clear_sd(self):
+        try:
+            self.device.write(0x1, [0x21, 0x35], 1000)
+            ret = self.device.read(0x81, 64, 1000)
+        except usb.core.USBTimeoutError as e:
+            print(f"set_date Timeout error {e}")
+        except usb.core.USBError as e:
+            print(f"USB ERR set date {e}")
+        except AttributeError:
+            print("ATTRIBUTE ERR set date")
+
 class UsbCommunication:
     def __init__(self):
         pass

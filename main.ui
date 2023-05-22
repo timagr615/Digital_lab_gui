@@ -3133,6 +3133,13 @@ background-color: #00AE68;
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="btn_sd_clear">
+                <property name="text">
+                 <string>Очистить карту</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>

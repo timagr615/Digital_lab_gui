@@ -133,13 +133,14 @@ class MainWindow(QMainWindow):
         self.btns_sd = [self.ui.btn_sd_1, self.ui.btn_sd_2, self.ui.btn_sd_3, self.ui.btn_sd_4,
                         self.ui.btn_sd_5, self.ui.btn_sd_6, self.ui.btn_sd_7, self.ui.btn_sd_8,
                         self.ui.btn_sd_9, self.ui.btn_sd_10, self.ui.btn_sd_11]
-        #self.ui.btn_sd_10.setVisible(False)
-        #self.ui.btn_sd_11.setVisible(False)
+        # self.ui.btn_sd_10.setVisible(False)
+        # self.ui.btn_sd_11.setVisible(False)
         self.last_btn_clicked = 0
         self.ui.btn_start.clicked.connect(self.btn_start_action)
         self.ui.btn_stop.clicked.connect(self.btn_stop_action)
         self.ui.lineEdit.textChanged.connect(self.edit_hz_one_action)
         self.ui.comboBox.activated.connect(self.comboactivated)
+        self.ui.btn_sd_clear.clicked.connect(self.sd_clear_action)
         for i in self.btns_sd:
             i.clicked.connect(self.btns_sd_action)
         for i in self.sensor_edits_hz:
@@ -170,6 +171,9 @@ class MainWindow(QMainWindow):
         now = strftime("%Y", localtime())
         self.ui.label_5.setText(f'© DCIE {now}')
 
+    def sd_clear_action(self):
+        self.dl.clear_sd()
+
     def btns_sd_action(self):
         sender = self.sender()
         idx = 0
@@ -179,8 +183,8 @@ class MainWindow(QMainWindow):
         # print(f'btn idx {idx} clicked')
         self.x_plot_sd = np.linspace(min(self.sensors_sd[idx].x), max(self.sensors_sd[idx].x), 1000)
 
-        #print(self.sensors_sd[idx].x)
-        #print(self.sensors_sd[idx].y)
+        # print(self.sensors_sd[idx].x)
+        # print(self.sensors_sd[idx].y)
         spl = make_interp_spline(self.sensors_sd[idx].x, self.sensors_sd[idx].y, 3)
 
         self.y_plot_sd = spl(self.x_plot_sd)
@@ -214,12 +218,15 @@ class MainWindow(QMainWindow):
         del self.downloader
 
     def comboactivated(self, index):
-        self.ui.label_sd_detect.setText(f'Выбран {index+1} файл')
+        self.ui.label_sd_detect.setText(f'Выбран {index + 1} файл')
         self.ui.label_sd_date.setText(self.sender().itemText(index))
         self.ui.label_sd_size.setText(f'{self.dl.sd_files[index].size} кб')
         self.ui.btn_sd_download.setEnabled(True)
 
     def btn_sd_data_action(self):
+        if not self.dl.device:
+            self.ui.label_sd_detect.setText("Карта памяти не обнаружена")
+            self.ui.btn_sd_clear.setEnabled(False)
         self.ui.btn_sd_download.setEnabled(False)
         if not self.dl.data_downloaded:
             for i in self.btns_sd:
@@ -236,7 +243,7 @@ class MainWindow(QMainWindow):
         if self.dl.sd_empty != 1:
             files = len(self.dl.sd_files)
             if files == 4 or files == 1:
-                self.ui.label_sd_detect.setText(f'На карте {len(self.dl.sd_files) } файл')
+                self.ui.label_sd_detect.setText(f'На карте {len(self.dl.sd_files)} файл')
             else:
                 self.ui.label_sd_detect.setText(f'На карте {len(self.dl.sd_files)} файла')
             self.ui.label_sd_date.setText('Выберите файл')
