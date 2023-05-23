@@ -173,6 +173,7 @@ class MainWindow(QMainWindow):
 
     def sd_clear_action(self):
         self.dl.clear_sd()
+        self.btn_sd_data_action()
 
     def btns_sd_action(self):
         sender = self.sender()

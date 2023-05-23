@@ -306,6 +306,8 @@ class DlmmUSB:
                 return 0.0
 
     def set_date(self):
+        if not self.device:
+            return
         date = localtime()
         yy = date.tm_year % 100
         mm = date.tm_mon
@@ -327,10 +329,12 @@ class DlmmUSB:
             print("ATTRIBUTE ERR set date")
 
     def get_sd_info(self):
+        if not self.device:
+            return
         try:
             self.device.write(0x1, [0x21, 0x27], 1000)
             ret = self.device.read(0x81, 64, 1000)
-            print(ret)
+            # print(ret)
             self.sd_files.clear()
 
             data = (ctypes.c_char * 4)()
@@ -373,6 +377,8 @@ class DlmmUSB:
             print("ATTRIBUTE ERR get_sd_info")
 
     def get_sd_data(self, sensors: list[SensorSd], index: int):
+        if not self.device:
+            return
         for i in sensors:
             i.available = False
         try:
@@ -405,47 +411,54 @@ class DlmmUSB:
                 print(i.y)'''
             self.data_downloaded = True
         except usb.core.USBTimeoutError as e:
-            print(f"set_date Timeout error {e}")
+            print(f"get_sd_data Timeout error {e}")
         except usb.core.USBError as e:
-            print(f"USB ERR set date {e}")
+            print(f"USB ERR get_sd_data {e}")
         except AttributeError:
-            print("ATTRIBUTE ERR set date")
+            print("ATTRIBUTE ERR get_sd_data")
 
     def send_exit(self):
+        if not self.device:
+            return
         try:
             self.device.write(0x1, [0x21, 0x29], 1000)
             ret = self.device.read(0x81, 64, 1000)
             # print(ret)
         except usb.core.USBTimeoutError as e:
-            print(f"set_date Timeout error {e}")
+            print(f"send_exit Timeout error {e}")
         except usb.core.USBError as e:
-            print(f"USB ERR set date {e}")
+            print(f"USB ERR send_exit {e}")
         except AttributeError:
-            print("ATTRIBUTE ERR set date")
+            print("ATTRIBUTE ERR send_exit")
 
     def send_who_am_i(self, who_am_i: int):
+        if not self.device:
+            return
         try:
             self.device.write(0x1, [0x24, 0x31, who_am_i], 1000)
             ret = self.device.read(0x81, 64, 1000)
         except usb.core.USBTimeoutError as e:
-            print(f"set_date Timeout error {e}")
+            print(f"send_who_am_i Timeout error {e}")
         except usb.core.USBError as e:
-            print(f"USB ERR set date {e}")
+            print(f"USB ERR send_who_am_i {e}")
         except AttributeError:
-            print("ATTRIBUTE ERR set date")
+            print("ATTRIBUTE ERR send_who_am_i")
 
     def clear_sd(self):
+        if not self.device:
+            return
         try:
             self.device.write(0x1, [0x21, 0x35], 1000)
             ret = self.device.read(0x81, 64, 1000)
         except usb.core.USBTimeoutError as e:
-            print(f"set_date Timeout error {e}")
+            print(f"clear sd Timeout error {e}")
         except usb.core.USBError as e:
-            print(f"USB ERR set date {e}")
+            print(f"USB ERR clear sd {e}")
         except AttributeError:
-            print("ATTRIBUTE ERR set date")
+            print("ATTRIBUTE ERR clear sd")
 
-class UsbCommunication:
+
+'''class UsbCommunication:
     def __init__(self):
         pass
 
@@ -453,4 +466,4 @@ class UsbCommunication:
     def check_connections() -> tuple:
         r1, r2, r3 = random.sample(range(0, 7), 3)
         # print(r1, r2, r3)
-        return r1, r2, r3
+        return r1, r2, r3'''
