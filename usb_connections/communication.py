@@ -152,6 +152,9 @@ class DlmmUSB:
     def check_device(self) -> bool:
         try:
             dev = None
+            print(platform)
+            libusb1_backend = usb.backend.libusb1.get_backend(find_library=libusb_package.find_library)
+            print(libusb1_backend)
             # dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
             # print(dev)
             # dev.set_configuration()
@@ -162,9 +165,9 @@ class DlmmUSB:
                 # dev.set_configuration()
             elif platform == "win32":
                 # print(f"WINDOWS {platform}")
-                dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid)
+                dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid, backend=libusb1_backend)
 
-            # print(dev)
+            print(dev)
             # dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
             # print(dev)
             if dev is self.device and dev is not None:
