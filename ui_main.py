@@ -2085,10 +2085,20 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_42.addWidget(self.comboBox)
 
+        self.verticalLayout_42 = QVBoxLayout()
+        self.verticalLayout_42.setObjectName(u"verticalLayout_42")
         self.btn_sd_download = QPushButton(self.frame_sd_info)
         self.btn_sd_download.setObjectName(u"btn_sd_download")
 
-        self.horizontalLayout_42.addWidget(self.btn_sd_download)
+        self.verticalLayout_42.addWidget(self.btn_sd_download)
+
+        self.btn_sd_save = QPushButton(self.frame_sd_info)
+        self.btn_sd_save.setObjectName(u"btn_sd_save")
+
+        self.verticalLayout_42.addWidget(self.btn_sd_save)
+
+
+        self.horizontalLayout_42.addLayout(self.verticalLayout_42)
 
         self.btn_sd_clear = QPushButton(self.frame_sd_info)
         self.btn_sd_clear.setObjectName(u"btn_sd_clear")
@@ -2290,6 +2300,7 @@ class Ui_MainWindow(object):
         self.label_sd_date.setText(QCoreApplication.translate("MainWindow", u"\u041a\u0430\u0440\u0442\u0430 \u043f\u0443\u0441\u0442\u0430", None))
         self.label_sd_size.setText(QCoreApplication.translate("MainWindow", u"0 \u0431\u0430\u0439\u0442", None))
         self.btn_sd_download.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043a\u0430\u0447\u0430\u0442\u044c", None))
+        self.btn_sd_save.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.btn_sd_clear.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u043a\u0430\u0440\u0442\u0443", None))
         self.btn_sd_1.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0447\u0438\u043a 1", None))
         self.btn_sd_2.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0447\u0438\u043a 2", None))

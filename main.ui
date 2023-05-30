@@ -3127,11 +3127,22 @@ background-color: #00AE68;
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="btn_sd_download">
-                <property name="text">
-                 <string>Скачать</string>
-                </property>
-               </widget>
+               <layout class="QVBoxLayout" name="verticalLayout_42">
+                <item>
+                 <widget class="QPushButton" name="btn_sd_download">
+                  <property name="text">
+                   <string>Скачать</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btn_sd_save">
+                  <property name="text">
+                   <string>Сохранить</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
               <item>
                <widget class="QPushButton" name="btn_sd_clear">

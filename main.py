@@ -1,11 +1,12 @@
 import math
 import sys
+import csv
 import random
 from random import randint
 from time import localtime, strftime
 
 from PySide6.QtGui import QColor
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PySide6 import QtGui, QtWidgets
 from PySide6.QtCore import QTimer, QThread
 from PySide6.QtCore import QFile
@@ -166,10 +167,22 @@ class MainWindow(QMainWindow):
         self.ui.btn_sd_data.clicked.connect(self.btn_sd_data_action)
         self.ui.btn_all_sensors.clicked.connect(self.btn_all_sensors_action)
         self.ui.btn_sd_download.clicked.connect(self.btn_download_action)
+        self.ui.btn_sd_save.clicked.connect(self.btn_save_action)
         for i in self.sensor_btns:
             i.clicked.connect(self.btn_sensor_action)
         now = strftime("%Y", localtime())
         self.ui.label_5.setText(f'© DCIE {now}')
+
+    def btn_save_action(self):
+        title = 'Сохранить'
+
+        file_path = QFileDialog.getSaveFileName(self, title)[0]
+        try:
+            with open(file_path, 'w') as f:
+                writer = csv.writer(f)
+                writer.writerows(self.dl.sd_file)
+        except FileNotFoundError as e:
+            print(f'File save error: {e}')
 
     def sd_clear_action(self):
         self.dl.clear_sd()
@@ -211,6 +224,7 @@ class MainWindow(QMainWindow):
 
     def download_finished(self):
         self.ui.btn_sd_download.setEnabled(False)
+        self.ui.btn_sd_save.setEnabled(True)
         for i, j in enumerate(self.sensors_sd):
             if j.available:
                 # self.btns_sd[i].setVisible(True)
@@ -229,6 +243,7 @@ class MainWindow(QMainWindow):
             self.ui.label_sd_detect.setText("Карта памяти не обнаружена")
             self.ui.btn_sd_clear.setEnabled(False)
         self.ui.btn_sd_download.setEnabled(False)
+        self.ui.btn_sd_save.setEnabled(False)
         if not self.dl.data_downloaded:
             for i in self.btns_sd:
                 i.setEnabled(False)
