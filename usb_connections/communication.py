@@ -162,11 +162,6 @@ class DlmmUSB:
         self.sd_file: list = list()
 
     def parse_sd_file(self, data: list):
-        datams = (ctypes.c_char*2)()
-        datams[0] = data[7]
-        datams[1] = data[8]
-        ms = struct.unpack('H', bytes(datams))
-        print(ms)
         date = datetime(year=localtime().tm_year,
                         month=data[2],
                         day=data[3],
@@ -177,7 +172,7 @@ class DlmmUSB:
         one_mesurement = []
         time_sd = date.strftime("%Y-%m-%d %H:%M:%S:%f")
         one_mesurement.append(time_sd)
-        for i in range(10):
+        for i in range(11):
             one_mesurement.append(data[9+i*5])
             datac = (ctypes.c_char * 4)()
             datac[0] = data[10 + i*5]
@@ -200,9 +195,9 @@ class DlmmUSB:
     def check_device(self) -> bool:
         try:
             dev = None
-            print(platform)
+            # print(platform)
             libusb1_backend = usb.backend.libusb1.get_backend(find_library=libusb_package.find_library)
-            print(libusb1_backend)
+            # print(libusb1_backend)
             # dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
             # print(dev)
             # dev.set_configuration()
@@ -215,7 +210,7 @@ class DlmmUSB:
                 # print(f"WINDOWS {platform}")
                 dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid, backend=libusb1_backend)
 
-            print(dev)
+            # print(dev)
             # dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
             # print(dev)
             if dev is self.device and dev is not None:
@@ -447,7 +442,7 @@ class DlmmUSB:
             self.device.write(0x1, [0x21, 0x28], 1000)
             ret = self.device.read(0x81, 64, 1000)
             self.stop = 1
-            time.sleep(1)
+            # time.sleep(1)
             # print(ret)
             data = [['Время', 'Идентификатор1', 'Значение1',
                      'Идентификатор2', 'Значение2',
@@ -460,6 +455,7 @@ class DlmmUSB:
                      'Идентификатор9', 'Значение9',
                      'Идентификатор10', 'Значение10',
                      'Идентификатор11', 'Значение11']]
+            # self.sd_file.append(data)
             #if ret[0] == 16:
             for i in sensors:
                 i.parse_first_sd_data(ret)
@@ -467,7 +463,7 @@ class DlmmUSB:
 
                 self.device.write(0x1, [0x21, 0x28], 2000)
                 ret = self.device.read(0x81, 64, 1000)
-                print(ret)
+                # print(ret)
                 self.parse_sd_file(ret)
                 if ret[0] == 16:
                     for i in sensors:
