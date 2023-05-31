@@ -440,7 +440,7 @@ class DlmmUSB:
                 self.sd_files.append(SdFile(date, fb, lb, size,
                                             [ret[13 + i*14], ret[14 + i*14], ret[15 + i*14], ret[16 + i*14]],
                                             [ret[17 + i*14], ret[18 + i*14], ret[19 + i*14], ret[20 + i*14]]))
-
+            self.sd_files.sort(key=lambda x: x.date, reverse=True)
             self.sd_checked = True
             if len(self.sd_files) == 0:
                 self.sd_empty = 1
