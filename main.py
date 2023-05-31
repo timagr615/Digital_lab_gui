@@ -4,6 +4,8 @@ import csv
 import random
 from random import randint
 from time import localtime, strftime
+import pandas as pd
+import xlsxwriter
 
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
@@ -177,10 +179,19 @@ class MainWindow(QMainWindow):
         title = 'Сохранить'
 
         file_path = QFileDialog.getSaveFileName(self, title)[0]
+        if file_path[-5:] != '.xlsx':
+            file_path += '.xlsx'
+
         try:
-            with open(file_path, 'w') as f:
+            with pd.ExcelWriter(file_path, engine='xlsxwriter') as writer:
+                for i in self.sensors_sd:
+                    if i.dataset['Время']:
+                        df = pd.DataFrame(i.dataset)
+                        df.to_excel(writer, sheet_name=i.name)
+            # print("success save")
+            '''with open(file_path, 'w') as f:
                 writer = csv.writer(f)
-                writer.writerows(self.dl.sd_file)
+                writer.writerows(self.dl.sd_file)'''
         except FileNotFoundError as e:
             print(f'File save error: {e}')
 

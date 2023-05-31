@@ -66,6 +66,20 @@ class SensorSd:
         self.name: str | None = None
         self.x: list = []
         self.y: list = []
+        self.dataset: dict = {"Время": []}
+
+    def parse_dataset(self, data):
+        id_to_data_idx = 5 * self.id + 9
+        # print(id_to_data_idx)
+        wai = data[id_to_data_idx]
+        date = datetime(year=localtime().tm_year,
+                        month=data[2],
+                        day=data[3],
+                        hour=data[4],
+                        minute=data[5],
+                        second=data[6],
+                        microsecond=(999 - data[7]) * 1000)
+        time_sd = date.strftime("%Y-%m-%d %H:%M:%S:%f")
 
     def parse_first_sd_data(self, data):
         id_to_data_idx = 5*self.id + 9
@@ -73,6 +87,7 @@ class SensorSd:
         wai = data[id_to_data_idx]
 
         if wai != 0:
+
             #print(data)
             self.available = True
             self.who_am_i = wai
@@ -95,6 +110,8 @@ class SensorSd:
             # print(self.x, self.y)
             self.y.append(data_v)
             self.x.append(0)
+            # self.dataset["Время"].append(time_sd)
+            self.dataset[sensor_unit[self.who_am_i]] = []
 
     def parse_sd_data(self, data):
         id_to_data_idx = 5 * self.id + 9
@@ -106,6 +123,16 @@ class SensorSd:
                 return
             self.available = True
             self.name = sensor_name[self.who_am_i]
+            date = datetime(year=localtime().tm_year,
+                            month=data[2],
+                            day=data[3],
+                            hour=data[4],
+                            minute=data[5],
+                            second=data[6],
+                            microsecond=(999 - data[7]) * 1000)
+            time_sd = date.strftime("%Y-%m-%d %H:%M:%S:%f")
+            time_sd = time_sd[:-3]
+
             datac = (ctypes.c_char * 4)()
             datac[0] = data[id_to_data_idx + 1]
             datac[1] = data[id_to_data_idx + 2]
@@ -128,6 +155,8 @@ class SensorSd:
                 if data_v < -1:
                     data_v = 0
             self.y.append(data_v)
+            self.dataset["Время"].append(time_sd)
+            self.dataset[sensor_unit[self.who_am_i]].append(data_v)
 
 
 class Sensor:
@@ -190,7 +219,6 @@ class DlmmUSB:
             one_mesurement.append(data_v)
         self.sd_file.append(one_mesurement)
         # print(one_mesurement)
-
 
     def check_device(self) -> bool:
         try:
@@ -442,21 +470,7 @@ class DlmmUSB:
             self.device.write(0x1, [0x21, 0x28], 1000)
             ret = self.device.read(0x81, 64, 1000)
             self.stop = 1
-            # time.sleep(1)
-            # print(ret)
-            data = [['Время', 'Идентификатор1', 'Значение1',
-                     'Идентификатор2', 'Значение2',
-                     'Идентификатор3', 'Значение3',
-                     'Идентификатор4', 'Значение4',
-                     'Идентификатор5', 'Значение5',
-                     'Идентификатор6', 'Значение6',
-                     'Идентификатор7', 'Значение7',
-                     'Идентификатор8', 'Значение8',
-                     'Идентификатор9', 'Значение9',
-                     'Идентификатор10', 'Значение10',
-                     'Идентификатор11', 'Значение11']]
-            # self.sd_file.append(data)
-            #if ret[0] == 16:
+
             for i in sensors:
                 i.parse_first_sd_data(ret)
             while ret[1] != 1:
@@ -468,10 +482,7 @@ class DlmmUSB:
                 if ret[0] == 16:
                     for i in sensors:
                         i.parse_sd_data(ret)
-            #print(sensors[0].y)
             self.stop = 0
-            '''for i in sensors:
-                print(i.y)'''
             self.data_downloaded = True
         except usb.core.USBTimeoutError as e:
             print(f"get_sd_data Timeout error {e}")
