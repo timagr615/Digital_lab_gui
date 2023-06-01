@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1187</width>
+    <width>1204</width>
     <height>1079</height>
    </rect>
   </property>
@@ -67,6 +67,24 @@ background-color: #1e90ff;
 border-radius: 3px;
 background-color: rgba(236, 50, 50, 1);
 }
+
+
+#btn_save{
+background-color: #3F92D2	;
+}
+#btn_save::pressed
+{
+	background-color: #0B61A4	;
+
+}
+
+#btn_save::hover,
+#btn_save::focus {
+  background-color: #0B61A4		;
+  border: 3px solid #9ac3fe;
+}
+
+
 #btn_stop{
 background-color: #FF7373;
 }
@@ -1161,6 +1179,29 @@ background-color: #00AE68;
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QPushButton" name="btn_save">
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/icons/icons/download.svg</normaloff>:/icons/icons/download.svg</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>40</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
                  <item>
                   <widget class="QPushButton" name="btn_start">
                    <property name="maximumSize">

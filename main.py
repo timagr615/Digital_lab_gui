@@ -1,3 +1,4 @@
+import datetime
 import math
 import sys
 import csv
@@ -6,6 +7,7 @@ from random import randint
 from time import localtime, strftime
 import pandas as pd
 import xlsxwriter
+import random
 
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
@@ -15,11 +17,13 @@ from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
 from PySide6.QtCharts import QChart, QChartView
 from ui_main import Ui_MainWindow
-from scipy.interpolate import make_interp_spline
+from scipy.interpolate import make_interp_spline, interp1d, CubicSpline, PchipInterpolator, Akima1DInterpolator, \
+    make_lsq_spline, InterpolatedUnivariateSpline, splrep, splev
 import numpy as np
 from chart import Chart
 import pyqtgraph as pg
 from usb_connections import communication
+from usb_connections.communication import sensor_unit, sensor_name
 
 QtGui.QImageReader.setAllocationLimit(0)
 
@@ -170,10 +174,34 @@ class MainWindow(QMainWindow):
         self.ui.btn_all_sensors.clicked.connect(self.btn_all_sensors_action)
         self.ui.btn_sd_download.clicked.connect(self.btn_download_action)
         self.ui.btn_sd_save.clicked.connect(self.btn_save_action)
+        self.ui.btn_save.clicked.connect(self.btn_save_main_action)
         for i in self.sensor_btns:
             i.clicked.connect(self.btn_sensor_action)
         now = strftime("%Y", localtime())
         self.ui.label_5.setText(f'© DCIE {now}')
+
+    def btn_save_main_action(self):
+        if self.timers[self.last_btn_clicked].isActive():
+            self.timers[self.last_btn_clicked].stop()
+            self.sensors[self.last_btn_clicked].running = False
+        dataset = {'Время': self.sensors[self.last_btn_clicked].x_time,
+                   sensor_unit[self.sensors[self.last_btn_clicked].who_am_i]: self.sensors[self.last_btn_clicked].y[
+                                                                              100:]}
+
+        file_path = QFileDialog.getSaveFileName(self, 'Сохранить')[0]
+        if file_path[-5:] != '.xlsx':
+            file_path += '.xlsx'
+        try:
+            with pd.ExcelWriter(file_path, engine='xlsxwriter') as writer:
+                if dataset['Время']:
+                    df = pd.DataFrame(dataset)
+                    df.to_excel(writer, sheet_name=sensor_name[self.sensors[self.last_btn_clicked].who_am_i])
+
+        except FileNotFoundError as e:
+            print(f'File save error: {e}')
+        if not self.timers[self.last_btn_clicked].isActive():
+            self.timers[self.last_btn_clicked].start()
+            self.sensors[self.last_btn_clicked].running = True
 
     def btn_save_action(self):
         title = 'Сохранить'
@@ -186,12 +214,9 @@ class MainWindow(QMainWindow):
             with pd.ExcelWriter(file_path, engine='xlsxwriter') as writer:
                 for i in self.sensors_sd:
                     if i.dataset['Время']:
+                        # print(i.dataset)
                         df = pd.DataFrame(i.dataset)
                         df.to_excel(writer, sheet_name=i.name)
-            # print("success save")
-            '''with open(file_path, 'w') as f:
-                writer = csv.writer(f)
-                writer.writerows(self.dl.sd_file)'''
         except FileNotFoundError as e:
             print(f'File save error: {e}')
 
@@ -205,16 +230,12 @@ class MainWindow(QMainWindow):
         for i, j in enumerate(self.btns_sd):
             if sender is j:
                 idx = i
-        # print(f'btn idx {idx} clicked')
         self.x_plot_sd = np.linspace(min(self.sensors_sd[idx].x), max(self.sensors_sd[idx].x), 1000)
 
-        # print(self.sensors_sd[idx].x)
-        # print(self.sensors_sd[idx].y)
         spl = make_interp_spline(self.sensors_sd[idx].x, self.sensors_sd[idx].y, 3)
 
         self.y_plot_sd = spl(self.x_plot_sd)
         self.data_line_sd.setData(self.x_plot_sd, self.y_plot_sd)
-        # print(self.x_plot_sd, self.y_plot_sd)
         self.graphWidget_sd.setXRange(int(self.x_plot_sd[0]), int(self.x_plot_sd[-1]), padding=None, update=True)
 
     def btn_download_action(self):
@@ -302,7 +323,6 @@ class MainWindow(QMainWindow):
         self.hLine_sd.setPos(mousePoint.y())
 
     def mouseMoved(self, evt):
-
         pos = evt
         mousePoint = self.vb.mapSceneToView(pos)
         index = mousePoint.x()
@@ -322,22 +342,19 @@ class MainWindow(QMainWindow):
         return math.sin(x * 3) + 4 * math.sin(x)
 
     def update_data(self, i: int):
-        self.sensors[i].x = self.sensors[i].x[1:]
+        # self.sensors[i].x = self.sensors[i].x[1:]
         self.sensors[i].x.append(self.sensors[i].x[-1] + 1)
-        self.sensors[i].y = self.sensors[i].y[1:]
+        # t = strftime("%Y-%m-%d %H:%M:%S:%f ", localtime())
+        t = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+        self.sensors[i].x_time.append(t)
         data = self.dl.get_data_from_sensor(self.sensors[i])
-        # print(data)
-        # self.sensors[i].y.append(self.example_func(self.sensors[i].x[-1]))
-        self.sensors[i].y.append(data)
-        # print(sum(self.sensors[i].y[-50:])/len(self.sensors[i].y[-50:]))
-        # print(self.sensors[i].x)
-        self.x_plot = np.linspace(min(self.sensors[i].x), max(self.sensors[i].x), 1000)
-        spl = make_interp_spline(self.sensors[i].x, self.sensors[i].y, 3)
+        self.sensors[i].y.append(round(data + random.uniform(0.01, 0.05), 2))
+        self.x_plot = np.linspace(min(self.sensors[i].x[-100:]), max(self.sensors[i].x[-100:]), 1000)
+        spl = make_interp_spline(self.sensors[i].x[-100:], self.sensors[i].y[-100:])
         self.y_plot = spl(self.x_plot)
-        # print(self.x_plot[999], self.y_plot[999])
-        # self.sensor_values[i].setText(str(self.sensors[i].y[-1]))
-        # print(self.sensors[i].y)
-        # self.data_line.setData(self.sensors[i].x, self.sensors[i].y)
+        for i, j in enumerate(self.y_plot):
+            if j < 0:
+                self.y_plot[i] = 0
 
     def edit_hz_one_action(self):
         sender = self.sender()

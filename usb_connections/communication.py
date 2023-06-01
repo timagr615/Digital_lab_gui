@@ -15,7 +15,7 @@ from collections import deque
 from PySide6.QtCore import Qt, QTimer, Slot
 
 sensor_name = {0xBD: "Датчик шума", 0xBC: "Термопара", 0xBA: "Датчик тока",
-               0xBE: "Датчик пульса", 0xBB: "Датчик света", 0xBF: "Датчик ультрафиолета",
+               0xBE: "Датчик пульса", 0xBB: "Датчик  освещенности", 0xBF: "Датчик ультрафиолета",
                0xB1: "Датчик давления", 0xB2: "Датчик влажности", 0xB3: "Датчик температуры"}
 
 sensor_unit = {0xBD: "dB", 0xBC: "C", 0xBA: "A",
@@ -170,6 +170,7 @@ class Sensor:
         self.unit: str = ""
         self.x: list = list(range(100))
         self.y: list[int | float] = [0 for _ in range(100)]
+        self.x_time = list()
 
 
 class DlmmUSB:

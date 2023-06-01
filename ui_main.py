@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1187, 1079)
+        MainWindow.resize(1204, 1079)
         MainWindow.setStyleSheet(u"\n"
 "font-family: OpenSans-Regular;\n"
 "\n"
@@ -78,6 +78,25 @@ class Ui_MainWindow(object):
 "border-radius: 3px;\n"
 "background-color: rgba(236, 50, 50, 1);\n"
 "}\n"
+"\n"
+"\n"
+"#btn_save{\n"
+"background-color: #3F92D2	;\n"
+"}\n"
+"#btn_save::pressed\n"
+"{\n"
+"	background-color: #0B61A4	;\n"
+"\n"
+"}\n"
+"\n"
+"#btn_save::hover,\n"
+"#btn_save::focus {\n"
+"  background-color: #0B61A4		;\n"
+"  border: 3px solid #9ac3fe;\n"
+""
+                        "}\n"
+"\n"
+"\n"
 "#btn_stop{\n"
 "background-color: #FF7373;\n"
 "}\n"
@@ -92,8 +111,7 @@ class Ui_MainWindow(object):
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
-"#btn_"
-                        "start {\n"
+"#btn_start {\n"
 "background-color: #00AE68;\n"
 "}\n"
 "#btn_start::pressed\n"
@@ -128,7 +146,8 @@ class Ui_MainWindow(object):
 "}\n"
 "#frame_sd_sensors{\n"
 "border-top: 1px solid #586178	;\n"
-"}\n"
+""
+                        "}\n"
 "#frame_sd_plot{\n"
 "border-top: 1px solid #586178	;\n"
 "}\n"
@@ -142,8 +161,7 @@ class Ui_MainWindow(object):
 "border-radius: 8px;\n"
 "}\n"
 "#frame_14{\n"
-"border-top: 1px solid #58617"
-                        "8	;\n"
+"border-top: 1px solid #586178	;\n"
 "}\n"
 "#frame_7{\n"
 "\n"
@@ -192,7 +210,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#frame_sens_7{\n"
-"border-top: 1px solid #586178	;\n"
+"border"
+                        "-top: 1px solid #586178	;\n"
 "}\n"
 "\n"
 "#frame_sens_8{\n"
@@ -208,8 +227,7 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#frame_sens_11{\n"
-"border-"
-                        "top: 1px solid #586178	;\n"
+"border-top: 1px solid #586178	;\n"
 "}\n"
 "\n"
 "#frame_25{\n"
@@ -254,7 +272,8 @@ class Ui_MainWindow(object):
 "\n"
 "#frame_18{\n"
 "\n"
-"border-right: 1px solid #586178	;\n"
+"border-right: 1px solid #586178	;"
+                        "\n"
 "}\n"
 "#frame_20{\n"
 "\n"
@@ -272,8 +291,7 @@ class Ui_MainWindow(object):
 "\n"
 "border-right: 1px solid #586178	;\n"
 "}\n"
-""
-                        "#frame_32{\n"
+"#frame_32{\n"
 "\n"
 "border-right: 1px solid #586178	;\n"
 "}\n"
@@ -320,7 +338,8 @@ class Ui_MainWindow(object):
 "#frame_43{\n"
 "\n"
 "border-right: 1px solid #586178	;\n"
-"}\n"
+""
+                        "}\n"
 "#frame_44{\n"
 "\n"
 "border-right: 1px solid #586178	;\n"
@@ -337,8 +356,7 @@ class Ui_MainWindow(object):
 "\n"
 "border-right: 1px solid #586178	;\n"
 "}\n"
-"#"
-                        "frame_53{\n"
+"#frame_53{\n"
 "border-right: 1px solid #586178	;\n"
 "}\n"
 "\n"
@@ -384,7 +402,8 @@ class Ui_MainWindow(object):
 "	color: #fff;\n"
 "	font-size: 11px;\n"
 "	font-weight: bold;\n"
-"	border: none;\n"
+"	bord"
+                        "er: none;\n"
 "	border-radius: 25px;\n"
 "	\n"
 "\n"
@@ -404,8 +423,7 @@ class Ui_MainWindow(object):
 "\n"
 "}\n"
 "QPushButton {\n"
-"  background-color:"
-                        " #0d6efd;\n"
+"  background-color: #0d6efd;\n"
 "  color: #fff;\n"
 "  font-weight: 600;\n"
 "  border-radius: 8px;\n"
@@ -445,7 +463,8 @@ class Ui_MainWindow(object):
 "\n"
 "#btn_start_1::hover,\n"
 "#btn_start_1::focus {\n"
-"  background-color: #00bf06	;\n"
+"  background-color: #0"
+                        "0bf06	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
 "\n"
@@ -461,8 +480,7 @@ class Ui_MainWindow(object):
 "\n"
 "#btn_stop_2::hover,\n"
 "#btn_stop_2::focus {\n"
-"  background-color: "
-                        "#bf0600	;\n"
+"  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
 "#btn_start_2 {\n"
@@ -506,7 +524,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#btn_start_3::hover,\n"
-"#btn_start_3::focus {\n"
+"#btn_start_3::focu"
+                        "s {\n"
 "  background-color: #00bf06	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
@@ -522,8 +541,7 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "#btn_stop_4::hover,\n"
-"#btn_stop_4::fo"
-                        "cus {\n"
+"#btn_stop_4::focus {\n"
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
 "}\n"
@@ -566,7 +584,8 @@ class Ui_MainWindow(object):
 "\n"
 "}\n"
 "\n"
-"#btn_start_5::hover,\n"
+"#btn_start_5::hove"
+                        "r,\n"
 "#btn_start_5::focus {\n"
 "  background-color: #00bf06	;\n"
 "  border: 3px solid #9ac3fe;\n"
@@ -581,8 +600,7 @@ class Ui_MainWindow(object):
 "\n"
 "}\n"
 "\n"
-"#btn_stop_6::hover,"
-                        "\n"
+"#btn_stop_6::hover,\n"
 "#btn_stop_6::focus {\n"
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
@@ -625,7 +643,8 @@ class Ui_MainWindow(object):
 "\n"
 "}\n"
 "\n"
-"#btn_start_7::hover,\n"
+"#bt"
+                        "n_start_7::hover,\n"
 "#btn_start_7::focus {\n"
 "  background-color: #00bf06	;\n"
 "  border: 3px solid #9ac3fe;\n"
@@ -641,8 +660,7 @@ class Ui_MainWindow(object):
 "\n"
 "}\n"
 "\n"
-""
-                        "#btn_stop_8::hover,\n"
+"#btn_stop_8::hover,\n"
 "#btn_stop_8::focus {\n"
 "  background-color: #bf0600	;\n"
 "  border: 3px solid #9ac3fe;\n"
@@ -682,7 +700,8 @@ class Ui_MainWindow(object):
 "#btn_start_9::pressed\n"
 "{\n"
 "	background-color: #ff4747;\n"
-"\n"
+""
+                        "\n"
 "}\n"
 "\n"
 "#btn_start_9::hover,\n"
@@ -697,8 +716,7 @@ class Ui_MainWindow(object):
 "#btn_stop_10::pressed\n"
 "{\n"
 "	background-color: #bf0600;\n"
-""
-                        "\n"
+"\n"
 "}\n"
 "\n"
 "#btn_stop_10::hover,\n"
@@ -740,7 +758,8 @@ class Ui_MainWindow(object):
 "}\n"
 "#btn_start_11::pressed\n"
 "{\n"
-"	background-color: #ff4747;\n"
+"	ba"
+                        "ckground-color: #ff4747;\n"
 "\n"
 "}\n"
 "\n"
@@ -1019,12 +1038,22 @@ class Ui_MainWindow(object):
         self.frame_13.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.frame_13)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.btn_save = QPushButton(self.frame_13)
+        self.btn_save.setObjectName(u"btn_save")
+        self.btn_save.setMaximumSize(QSize(50, 50))
+        icon = QIcon()
+        icon.addFile(u":/icons/icons/download.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.btn_save.setIcon(icon)
+        self.btn_save.setIconSize(QSize(40, 40))
+
+        self.horizontalLayout_4.addWidget(self.btn_save)
+
         self.btn_start = QPushButton(self.frame_13)
         self.btn_start.setObjectName(u"btn_start")
         self.btn_start.setMaximumSize(QSize(50, 50))
-        icon = QIcon()
-        icon.addFile(u":/icons/icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.btn_start.setIcon(icon)
+        icon1 = QIcon()
+        icon1.addFile(u":/icons/icons/play_circle_FILL0_wght400_GRAD0_opsz48.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.btn_start.setIcon(icon1)
         self.btn_start.setIconSize(QSize(40, 40))
 
         self.horizontalLayout_4.addWidget(self.btn_start)
@@ -1032,9 +1061,9 @@ class Ui_MainWindow(object):
         self.btn_stop = QPushButton(self.frame_13)
         self.btn_stop.setObjectName(u"btn_stop")
         self.btn_stop.setMaximumSize(QSize(50, 50))
-        icon1 = QIcon()
-        icon1.addFile(u":/icons/icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.btn_stop.setIcon(icon1)
+        icon2 = QIcon()
+        icon2.addFile(u":/icons/icons/stop_circle_FILL0_wght400_GRAD0_opsz48.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.btn_stop.setIcon(icon2)
         self.btn_stop.setIconSize(QSize(40, 40))
 
         self.horizontalLayout_4.addWidget(self.btn_stop)
@@ -1177,7 +1206,7 @@ class Ui_MainWindow(object):
         self.btn_start_1.setObjectName(u"btn_start_1")
         self.btn_start_1.setMinimumSize(QSize(0, 0))
         self.btn_start_1.setMaximumSize(QSize(50, 50))
-        self.btn_start_1.setIcon(icon)
+        self.btn_start_1.setIcon(icon1)
         self.btn_start_1.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_26.addWidget(self.btn_start_1)
@@ -1185,7 +1214,7 @@ class Ui_MainWindow(object):
         self.btn_stop_1 = QPushButton(self.frame_19)
         self.btn_stop_1.setObjectName(u"btn_stop_1")
         self.btn_stop_1.setMaximumSize(QSize(50, 50))
-        self.btn_stop_1.setIcon(icon1)
+        self.btn_stop_1.setIcon(icon2)
         self.btn_stop_1.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_26.addWidget(self.btn_stop_1)
@@ -1262,7 +1291,7 @@ class Ui_MainWindow(object):
         self.btn_start_2 = QPushButton(self.frame_24)
         self.btn_start_2.setObjectName(u"btn_start_2")
         self.btn_start_2.setMaximumSize(QSize(50, 50))
-        self.btn_start_2.setIcon(icon)
+        self.btn_start_2.setIcon(icon1)
         self.btn_start_2.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_27.addWidget(self.btn_start_2)
@@ -1270,7 +1299,7 @@ class Ui_MainWindow(object):
         self.btn_stop_2 = QPushButton(self.frame_24)
         self.btn_stop_2.setObjectName(u"btn_stop_2")
         self.btn_stop_2.setMaximumSize(QSize(50, 50))
-        self.btn_stop_2.setIcon(icon1)
+        self.btn_stop_2.setIcon(icon2)
         self.btn_stop_2.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_27.addWidget(self.btn_stop_2)
@@ -1347,7 +1376,7 @@ class Ui_MainWindow(object):
         self.btn_start_3 = QPushButton(self.frame_34)
         self.btn_start_3.setObjectName(u"btn_start_3")
         self.btn_start_3.setMaximumSize(QSize(50, 50))
-        self.btn_start_3.setIcon(icon)
+        self.btn_start_3.setIcon(icon1)
         self.btn_start_3.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_28.addWidget(self.btn_start_3)
@@ -1355,7 +1384,7 @@ class Ui_MainWindow(object):
         self.btn_stop_3 = QPushButton(self.frame_34)
         self.btn_stop_3.setObjectName(u"btn_stop_3")
         self.btn_stop_3.setMaximumSize(QSize(50, 50))
-        self.btn_stop_3.setIcon(icon1)
+        self.btn_stop_3.setIcon(icon2)
         self.btn_stop_3.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_28.addWidget(self.btn_stop_3)
@@ -1432,7 +1461,7 @@ class Ui_MainWindow(object):
         self.btn_start_4 = QPushButton(self.frame_38)
         self.btn_start_4.setObjectName(u"btn_start_4")
         self.btn_start_4.setMaximumSize(QSize(50, 50))
-        self.btn_start_4.setIcon(icon)
+        self.btn_start_4.setIcon(icon1)
         self.btn_start_4.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_29.addWidget(self.btn_start_4)
@@ -1440,7 +1469,7 @@ class Ui_MainWindow(object):
         self.btn_stop_4 = QPushButton(self.frame_38)
         self.btn_stop_4.setObjectName(u"btn_stop_4")
         self.btn_stop_4.setMaximumSize(QSize(50, 50))
-        self.btn_stop_4.setIcon(icon1)
+        self.btn_stop_4.setIcon(icon2)
         self.btn_stop_4.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_29.addWidget(self.btn_stop_4)
@@ -1517,7 +1546,7 @@ class Ui_MainWindow(object):
         self.btn_start_5 = QPushButton(self.frame_42)
         self.btn_start_5.setObjectName(u"btn_start_5")
         self.btn_start_5.setMaximumSize(QSize(50, 50))
-        self.btn_start_5.setIcon(icon)
+        self.btn_start_5.setIcon(icon1)
         self.btn_start_5.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_30.addWidget(self.btn_start_5)
@@ -1525,7 +1554,7 @@ class Ui_MainWindow(object):
         self.btn_stop_5 = QPushButton(self.frame_42)
         self.btn_stop_5.setObjectName(u"btn_stop_5")
         self.btn_stop_5.setMaximumSize(QSize(50, 50))
-        self.btn_stop_5.setIcon(icon1)
+        self.btn_stop_5.setIcon(icon2)
         self.btn_stop_5.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_30.addWidget(self.btn_stop_5)
@@ -1602,7 +1631,7 @@ class Ui_MainWindow(object):
         self.btn_start_6 = QPushButton(self.frame_46)
         self.btn_start_6.setObjectName(u"btn_start_6")
         self.btn_start_6.setMaximumSize(QSize(50, 50))
-        self.btn_start_6.setIcon(icon)
+        self.btn_start_6.setIcon(icon1)
         self.btn_start_6.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_31.addWidget(self.btn_start_6)
@@ -1610,7 +1639,7 @@ class Ui_MainWindow(object):
         self.btn_stop_6 = QPushButton(self.frame_46)
         self.btn_stop_6.setObjectName(u"btn_stop_6")
         self.btn_stop_6.setMaximumSize(QSize(50, 50))
-        self.btn_stop_6.setIcon(icon1)
+        self.btn_stop_6.setIcon(icon2)
         self.btn_stop_6.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_31.addWidget(self.btn_stop_6)
@@ -1687,7 +1716,7 @@ class Ui_MainWindow(object):
         self.btn_start_7 = QPushButton(self.frame_50)
         self.btn_start_7.setObjectName(u"btn_start_7")
         self.btn_start_7.setMaximumSize(QSize(50, 50))
-        self.btn_start_7.setIcon(icon)
+        self.btn_start_7.setIcon(icon1)
         self.btn_start_7.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_32.addWidget(self.btn_start_7)
@@ -1695,7 +1724,7 @@ class Ui_MainWindow(object):
         self.btn_stop_7 = QPushButton(self.frame_50)
         self.btn_stop_7.setObjectName(u"btn_stop_7")
         self.btn_stop_7.setMaximumSize(QSize(50, 50))
-        self.btn_stop_7.setIcon(icon1)
+        self.btn_stop_7.setIcon(icon2)
         self.btn_stop_7.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_32.addWidget(self.btn_stop_7)
@@ -1772,7 +1801,7 @@ class Ui_MainWindow(object):
         self.btn_start_8 = QPushButton(self.frame_54)
         self.btn_start_8.setObjectName(u"btn_start_8")
         self.btn_start_8.setMaximumSize(QSize(50, 50))
-        self.btn_start_8.setIcon(icon)
+        self.btn_start_8.setIcon(icon1)
         self.btn_start_8.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_33.addWidget(self.btn_start_8)
@@ -1780,7 +1809,7 @@ class Ui_MainWindow(object):
         self.btn_stop_8 = QPushButton(self.frame_54)
         self.btn_stop_8.setObjectName(u"btn_stop_8")
         self.btn_stop_8.setMaximumSize(QSize(50, 50))
-        self.btn_stop_8.setIcon(icon1)
+        self.btn_stop_8.setIcon(icon2)
         self.btn_stop_8.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_33.addWidget(self.btn_stop_8)
@@ -1858,7 +1887,7 @@ class Ui_MainWindow(object):
         self.btn_start_9 = QPushButton(self.frame_62)
         self.btn_start_9.setObjectName(u"btn_start_9")
         self.btn_start_9.setMaximumSize(QSize(50, 50))
-        self.btn_start_9.setIcon(icon)
+        self.btn_start_9.setIcon(icon1)
         self.btn_start_9.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_39.addWidget(self.btn_start_9)
@@ -1866,7 +1895,7 @@ class Ui_MainWindow(object):
         self.btn_stop_9 = QPushButton(self.frame_62)
         self.btn_stop_9.setObjectName(u"btn_stop_9")
         self.btn_stop_9.setMaximumSize(QSize(50, 50))
-        self.btn_stop_9.setIcon(icon1)
+        self.btn_stop_9.setIcon(icon2)
         self.btn_stop_9.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_39.addWidget(self.btn_stop_9)
@@ -1943,7 +1972,7 @@ class Ui_MainWindow(object):
         self.btn_start_10 = QPushButton(self.frame_68)
         self.btn_start_10.setObjectName(u"btn_start_10")
         self.btn_start_10.setMaximumSize(QSize(50, 50))
-        self.btn_start_10.setIcon(icon)
+        self.btn_start_10.setIcon(icon1)
         self.btn_start_10.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_41.addWidget(self.btn_start_10)
@@ -1951,7 +1980,7 @@ class Ui_MainWindow(object):
         self.btn_stop_10 = QPushButton(self.frame_68)
         self.btn_stop_10.setObjectName(u"btn_stop_10")
         self.btn_stop_10.setMaximumSize(QSize(50, 50))
-        self.btn_stop_10.setIcon(icon1)
+        self.btn_stop_10.setIcon(icon2)
         self.btn_stop_10.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_41.addWidget(self.btn_stop_10)
@@ -2028,7 +2057,7 @@ class Ui_MainWindow(object):
         self.btn_start_11 = QPushButton(self.frame_66)
         self.btn_start_11.setObjectName(u"btn_start_11")
         self.btn_start_11.setMaximumSize(QSize(50, 50))
-        self.btn_start_11.setIcon(icon)
+        self.btn_start_11.setIcon(icon1)
         self.btn_start_11.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_40.addWidget(self.btn_start_11)
@@ -2036,7 +2065,7 @@ class Ui_MainWindow(object):
         self.btn_stop_11 = QPushButton(self.frame_66)
         self.btn_stop_11.setObjectName(u"btn_stop_11")
         self.btn_stop_11.setMaximumSize(QSize(50, 50))
-        self.btn_stop_11.setIcon(icon1)
+        self.btn_stop_11.setIcon(icon2)
         self.btn_stop_11.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_40.addWidget(self.btn_stop_11)
@@ -2226,6 +2255,7 @@ class Ui_MainWindow(object):
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u0427\u0430\u0441\u0442\u043e\u0442\u0430, \u0413\u0446", None))
         self.lineEdit.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.label_sensor_value.setText(QCoreApplication.translate("MainWindow", u"\u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435", None))
+        self.btn_save.setText("")
         self.btn_start.setText("")
         self.btn_stop.setText("")
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"Copyright DCIE", None))
