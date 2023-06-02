@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="icons">
+    <file>delete.svg</file>
+    <file>icons/delete.svg</file>
+    <file>delete.svg</file>
     <file>icons/down.svg</file>
     <file>icons/download.svg</file>
     <file>icons/usb_FILL0_wght400_GRAD0_opsz48.svg</file>

@@ -17,13 +17,12 @@ from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
 from PySide6.QtCharts import QChart, QChartView
 from ui_main import Ui_MainWindow
-from scipy.interpolate import make_interp_spline, interp1d, CubicSpline, PchipInterpolator, Akima1DInterpolator, \
-    make_lsq_spline, InterpolatedUnivariateSpline, splrep, splev
+from scipy.interpolate import make_interp_spline
 import numpy as np
 from chart import Chart
 import pyqtgraph as pg
 from usb_connections import communication
-from usb_connections.communication import sensor_unit, sensor_name
+from usb_connections.communication import sensor_unit, sensor_name, sensor_val
 
 QtGui.QImageReader.setAllocationLimit(0)
 
@@ -59,6 +58,7 @@ class MainWindow(QMainWindow):
         self.graphWidget_sd = pg.PlotWidget()
         self.x_plot_sd = list(range(1000))
         self.y_plot_sd = list(range(1000))
+        self.t_plot_sd = list(range(1000))
         self.graphWidget_sd.setBackground('w')
         self.pen_sd = pg.mkPen(color=(255, 0, 0), width=2)
         # self.data_line = self.graphWidget.addPlot(self.x_plot, self.y_plot, pen=self.pen)
@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
 
         self.graphWidget = pg.PlotWidget()
         self.x_plot = list(range(1000))
-        self.y_plot = list(range(1000))
+        self.y_plot = [0 for _ in range(1000)]
         self.graphWidget.setBackground('w')
         # self.label = pg.LabelItem(text='test', justify='right')
 
@@ -175,10 +175,21 @@ class MainWindow(QMainWindow):
         self.ui.btn_sd_download.clicked.connect(self.btn_download_action)
         self.ui.btn_sd_save.clicked.connect(self.btn_save_action)
         self.ui.btn_save.clicked.connect(self.btn_save_main_action)
+        self.ui.btn_clear.clicked.connect(self.btn_clear_action)
         for i in self.sensor_btns:
             i.clicked.connect(self.btn_sensor_action)
         now = strftime("%Y", localtime())
         self.ui.label_5.setText(f'© DCIE {now}')
+        self.wai_sd = 0x0
+
+    def btn_clear_action(self):
+        self.sensors[self.last_btn_clicked].x = list(range(100))
+        self.sensors[self.last_btn_clicked].y = [0 for _ in range(100)]
+        self.sensors[self.last_btn_clicked].x_time = list()
+        self.x_plot = list(range(1000))
+        self.y_plot = [0 for _ in range(1000)]
+        self.data_line.setData(self.x_plot, self.y_plot)
+        self.graphWidget.setXRange(int(self.x_plot[0]), int(self.x_plot[-1]), padding=None, update=True)
 
     def btn_save_main_action(self):
         if self.timers[self.last_btn_clicked].isActive():
@@ -230,8 +241,9 @@ class MainWindow(QMainWindow):
         for i, j in enumerate(self.btns_sd):
             if sender is j:
                 idx = i
-        self.x_plot_sd = np.linspace(min(self.sensors_sd[idx].x), max(self.sensors_sd[idx].x), 1000)
-
+        self.wai_sd = self.sensors_sd[idx].who_am_i
+        self.x_plot_sd = np.linspace(min(self.sensors_sd[idx].x), max(self.sensors_sd[idx].x), len(self.sensors_sd[idx].x)*10)
+        self.t_plot_sd = self.sensors_sd[idx].dataset['Время']
         spl = make_interp_spline(self.sensors_sd[idx].x, self.sensors_sd[idx].y, 3)
 
         self.y_plot_sd = spl(self.x_plot_sd)
@@ -311,14 +323,34 @@ class MainWindow(QMainWindow):
         pos = evt
         mousePoint = self.vb_sd.mapSceneToView(pos)
         index = mousePoint.x()
-        y_ind = round((index - self.x_plot_sd[0]) * 10) + 10
-        if y_ind >= 1000:
-            y_ind = 999
+        # print(index, self.x_plot_sd[-1], len(self.x_plot_sd), len(self.y_plot_sd))
+        # y_ind = round((index - self.x_plot_sd[0]) * 10) + 10
+        y_ind = int(index)*10 + 10
+        if y_ind >= len(self.x_plot_sd):
+            y_ind = len(self.x_plot_sd)-1
         elif y_ind <= 0:
             y_ind = 0
         y_val = round(self.y_plot_sd[y_ind], 2)
-        self.graphWidget_sd.setTitle(f"<span style='font-size: 12pt'>x={round(index, 2)}, "
-                                     f"<span style='color: red'>y={y_val}</span>")
+
+        try:
+            if int(index) >= 0:
+                t = self.t_plot_sd[int(index)]
+            else:
+                t = "-" * 11 + "---"
+
+        except IndexError:
+            t = "-" * 11 + "---"
+        if type(t) is not str:
+            t = "-" * 11 + "---"
+        if self.wai_sd != 0:
+            name = sensor_val[self.wai_sd]
+            unit = sensor_unit[self.wai_sd]
+        else:
+            name = "y"
+            unit = ""
+        self.graphWidget_sd.setTitle(f"<span style='font-size: 14pt; color: green'>t={t[11:]},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
+            f"<span style='font-size: 14pt; color: red'>{name}={y_val} {unit},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
+            f"<span style='font-size: 11pt; color: gray'>x={round(index, 2)}</span>")
         self.vLine_sd.setPos(mousePoint.x())
         self.hLine_sd.setPos(mousePoint.y())
 
@@ -326,14 +358,30 @@ class MainWindow(QMainWindow):
         pos = evt
         mousePoint = self.vb.mapSceneToView(pos)
         index = mousePoint.x()
-        y_ind = round((index - self.x_plot[0]) * 10) + 10
+
+        ind = int((index-self.x_plot[0]) * 10) + 8
+        if ind > 999:
+            ind = 999
+        if ind < 0:
+            ind = 0
+        '''y_ind = round((index - self.x_plot[0]) * 10) + 10
         if y_ind >= 1000:
             y_ind = 999
         elif y_ind <= 0:
-            y_ind = 0
-        y_val = round(self.y_plot[y_ind], 2)
-        self.graphWidget.setTitle(f"<span style='font-size: 12pt'>x={round(index, 2)}, "
-                                  f"<span style='color: red'>y={y_val}</span>")
+            y_ind = 0'''
+        # print(len(self.sensors[self.last_btn_clicked].x_time), index, ind)
+        try:
+            t = self.sensors[self.last_btn_clicked].x_time[int(index-100)]
+        except IndexError:
+            t = "-"*11 + "---"
+        # print(self.sensors[self.last_btn_clicked].name)
+        y_val = round(self.y_plot[ind], 2)
+        wai = self.sensors[self.last_btn_clicked].who_am_i
+        name = sensor_val[wai]
+        unit = sensor_unit[wai]
+        self.graphWidget.setTitle(f"<span style='font-size: 14pt; color: green'>t={t[11:]},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
+            f"<span style='font-size: 14pt; color: red'>{name}={y_val} {unit},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
+            f"<span style='font-size: 11pt; color: gray'>x={round(index, 2)}</span>")
         self.vLine.setPos(mousePoint.x())
         self.hLine.setPos(mousePoint.y())
 
@@ -344,11 +392,15 @@ class MainWindow(QMainWindow):
     def update_data(self, i: int):
         # self.sensors[i].x = self.sensors[i].x[1:]
         self.sensors[i].x.append(self.sensors[i].x[-1] + 1)
-        # t = strftime("%Y-%m-%d %H:%M:%S:%f ", localtime())
-        t = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+        t = strftime("%Y-%m-%d %H:%M:%S", localtime())
+        ts = datetime.datetime.utcnow().strftime('.%f')[:-3]
+        t += ts
         self.sensors[i].x_time.append(t)
+        self.ui.btn_clear.setEnabled(True)
         data = self.dl.get_data_from_sensor(self.sensors[i])
         self.sensors[i].y.append(round(data + random.uniform(0.01, 0.05), 2))
+        if self.last_btn_clicked != i:
+            return
         self.x_plot = np.linspace(min(self.sensors[i].x[-100:]), max(self.sensors[i].x[-100:]), 1000)
         spl = make_interp_spline(self.sensors[i].x[-100:], self.sensors[i].y[-100:])
         self.y_plot = spl(self.x_plot)
@@ -465,6 +517,8 @@ class MainWindow(QMainWindow):
         # sender = int(self.sender().text().split()[0]) - 1
         # print(sender)
         self.dl.send_who_am_i(self.sensors[sender].who_am_i)
+        if not self.sensors[sender].x_time:
+            self.ui.btn_clear.setEnabled(False)
         self.last_btn_clicked = sender
         self.ui.stackedWidget.setCurrentWidget(self.ui.one_sensor)
         # print(self.last_btn_clicked, self.sensors[sender].y)
