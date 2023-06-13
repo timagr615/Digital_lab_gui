@@ -426,6 +426,10 @@ class MainWindow(QMainWindow):
         self.y_plot_sd = spl(self.x_plot_sd)
         self.data_line_sd.setData(self.x_plot_sd, self.y_plot_sd)
         self.graphWidget_sd.setXRange(int(self.x_plot_sd[0]), int(self.x_plot_sd[-1]), padding=None, update=True)
+        name = sensor_val[self.sensors_sd[idx].who_am_i]
+        unit = sensor_unit[self.sensors_sd[idx].who_am_i]
+        self.graphWidget_sd.setLabel('left', f'{name}, {unit}')
+        self.graphWidget_sd.setLabel('bottom', "X")
 
     def btn_download_action(self):
         for idx in range(len(self.timers)):
@@ -511,21 +515,33 @@ class MainWindow(QMainWindow):
 
         try:
             if int(index) >= 0:
-                t = self.t_plot_sd[int(index)]
+                idx = 0
+                for i, j in enumerate(self.sensors_sd):
+                    if j.who_am_i == self.wai_sd:
+                        idx = i
+                t = str(self.sensors_sd[idx].dataset["Время эксперимента"][int(index)])
+                # print(t)
+                # t = self.t_plot_sd[int(index)]
             else:
-                t = "-" * 11 + "---"
+                # t = "-" * 11 + "---"
+                t = "-"*5
 
         except IndexError:
-            t = "-" * 11 + "---"
+            # t = "-" * 11 + "---"
+            t = "-" * 5
+        except KeyError:
+            t = "-"*5
         if type(t) is not str:
-            t = "-" * 11 + "---"
+            #t = "-" * 11 + "---"
+            t = "-" * 5
         if self.wai_sd != 0:
             name = sensor_val[self.wai_sd]
             unit = sensor_unit[self.wai_sd]
         else:
             name = "y"
             unit = ""
-        self.graphWidget_sd.setTitle(f"<span style='font-size: 14pt; color: green'>t={t[11:]},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
+        # print(t)
+        self.graphWidget_sd.setTitle(f"<span style='font-size: 14pt; color: green'>t={t},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
             f"<span style='font-size: 14pt; color: red'>{name}={y_val} {unit},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
             f"<span style='font-size: 11pt; color: gray'>x={round(index, 2)}</span>")
         self.vLine_sd.setPos(mousePoint.x())
@@ -554,15 +570,15 @@ class MainWindow(QMainWindow):
             y_ind = 0'''
         # print(len(self.sensors[self.last_btn_clicked].x_time), index, ind)
         try:
-            t = self.sensors[self.last_btn_clicked].x_time[int(index-100)]
+            t = self.sensors[self.last_btn_clicked].x_timestamp[int(index-100)]
         except IndexError:
-            t = "-"*11 + "---"
-        # print(self.sensors[self.last_btn_clicked].name)
+            t = "-"*5
+        # print(t)
         y_val = round(self.y_plot[ind], 2)
         wai = self.sensors[self.last_btn_clicked].who_am_i
         name = sensor_val[wai]
         unit = sensor_unit[wai]
-        self.graphWidget.setTitle(f"<span style='font-size: 14pt; color: green'>t={t[11:]},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
+        self.graphWidget.setTitle(f"<span style='font-size: 14pt; color: green'>t={t},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
             f"<span style='font-size: 14pt; color: red'>{name}={y_val} {unit},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
             f"<span style='font-size: 11pt; color: gray'>x={round(index, 2)}</span>")
         self.vLine.setPos(mousePoint.x())
@@ -593,9 +609,11 @@ class MainWindow(QMainWindow):
         if self.ui.checkBox.isChecked():
             self.x_plot = np.linspace(min(self.sensors[i].x[-100:]), max(self.sensors[i].x[-100:]), 1000)
             spl = make_interp_spline(self.sensors[i].x[-100:], self.sensors[i].y[-100:])
+
             self.y_plot = spl(self.x_plot)
         else:
             self.x_plot = self.sensors[i].x[-100:]
+
             self.y_plot = self.sensors[i].y[-100:]
         for i, j in enumerate(self.y_plot):
             if j < 0:
@@ -728,6 +746,10 @@ class MainWindow(QMainWindow):
         self.ui.label_sensor_name.setText(self.sensors[sender].name)
         self.ui.lineEdit.setText(str(self.sensors[self.last_btn_clicked].frequency))
         self.data_line.setData(self.sensors[sender].x, self.sensors[sender].y)
+        name = sensor_val[self.sensors[sender].who_am_i]
+        unit = sensor_unit[self.sensors[sender].who_am_i]
+        self.graphWidget.setLabel('left', f'{name}, {unit}')
+        self.graphWidget.setLabel('bottom', "X")
 
         # self.data_line.setData(self.x_plot, self.y_plot)
         if self.timers[sender].isActive():
