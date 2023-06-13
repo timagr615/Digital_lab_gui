@@ -114,7 +114,8 @@ class SensorSd:
             self.y.append(data_v)
             self.x.append(0)
             # self.dataset["Время"].append(time_sd)
-            self.dataset[sensor_unit[self.who_am_i]] = []
+            self.dataset['Время эксперимента'] = []
+            self.dataset[f'Значение, {sensor_unit[self.who_am_i]}'] = []
 
     def parse_sd_data(self, data):
         id_to_data_idx = 5 * self.id + 9
@@ -159,7 +160,12 @@ class SensorSd:
                     data_v = 0
             self.y.append(data_v)
             self.dataset["Время"].append(time_sd)
-            self.dataset[sensor_unit[self.who_am_i]].append(data_v)
+            time0 = datetime.strptime(self.dataset['Время'][0]+'000', "%Y-%m-%d %H:%M:%S:%f")
+            time1 = datetime.strptime(time_sd+'000', "%Y-%m-%d %H:%M:%S:%f")
+            timestamp = round((time1 - time0).total_seconds(), 2)
+            self.dataset["Время эксперимента"].append(timestamp)
+            self.dataset[f'Значение, {sensor_unit[self.who_am_i]}'].append(data_v)
+
 
 
 class Sensor:
@@ -174,6 +180,8 @@ class Sensor:
         self.x: list = list(range(100))
         self.y: list[int | float] = [0 for _ in range(100)]
         self.x_time = list()
+        self.x_timestamp = list()
+        self.timestamp: float = 0.0
 
 
 class DlmmUSB:
@@ -193,6 +201,7 @@ class DlmmUSB:
         self.sd_files: list = []
         self.stop = 0
         self.sd_file: list = list()
+        # self.time = time.time()
 
     def parse_sd_file(self, data: list):
         date = datetime(year=localtime().tm_year,
@@ -349,6 +358,7 @@ class DlmmUSB:
             pass
 
     def get_data_from_sensor(self, sensor: Sensor) -> float | None:
+
         if self.device is None:
             self.check_device()
         if self.device is not None and sensor.connected:
@@ -359,8 +369,10 @@ class DlmmUSB:
                 if self.start_condition == 0:
                     self.set_start_condition(0x20)
                 # print(index_to_cmd[sensor.id])
+
                 self.device.write(0x1, [0x21, index_to_cmd[sensor.id]], 1000)
                 ret = self.device.read(0x81, 64, 1000)
+
                 data = (ctypes.c_char * 4)()
                 data[0] = ret[4]
                 data[1] = ret[5]
@@ -375,6 +387,7 @@ class DlmmUSB:
                 elif ret[2] == 0xBF and abs(data_v) < 0.55:
                     data_v = 0.0
                 # print(ret)
+
                 return data_v
             except usb.core.USBTimeoutError:
                 print("get_data_from_sensor Timeout error")

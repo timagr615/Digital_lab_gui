@@ -1197,6 +1197,13 @@ background-color: #00AE68;
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
                  <item>
+                  <widget class="QCheckBox" name="checkBox">
+                   <property name="text">
+                    <string> Сглаживание</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QPushButton" name="btn_save">
                    <property name="maximumSize">
                     <size>

@@ -1,6 +1,8 @@
+et-xmlfile==1.1.0
 libusb-package==1.0.26.1
 Nuitka==1.5.4
 numpy==1.24.3
+openpyxl==3.1.2
 ordered-set==4.1.0
 pandas==2.0.2
 patchelf==0.17.2.1

@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QLineEdit, QMainWindow,
-    QPushButton, QSizePolicy, QSpacerItem, QStackedWidget,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
+    QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+    QMainWindow, QPushButton, QSizePolicy, QSpacerItem,
+    QStackedWidget, QVBoxLayout, QWidget)
 import resources_rc
 
 class Ui_MainWindow(object):
@@ -1055,6 +1055,11 @@ class Ui_MainWindow(object):
         self.frame_13.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.frame_13)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.checkBox = QCheckBox(self.frame_13)
+        self.checkBox.setObjectName(u"checkBox")
+
+        self.horizontalLayout_4.addWidget(self.checkBox)
+
         self.btn_save = QPushButton(self.frame_13)
         self.btn_save.setObjectName(u"btn_save")
         self.btn_save.setMaximumSize(QSize(50, 50))
@@ -2282,6 +2287,7 @@ class Ui_MainWindow(object):
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u0427\u0430\u0441\u0442\u043e\u0442\u0430, \u0413\u0446", None))
         self.lineEdit.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.label_sensor_value.setText(QCoreApplication.translate("MainWindow", u"\u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435", None))
+        self.checkBox.setText(QCoreApplication.translate("MainWindow", u" \u0421\u0433\u043b\u0430\u0436\u0438\u0432\u0430\u043d\u0438\u0435", None))
         self.btn_save.setText("")
         self.btn_start.setText("")
         self.btn_stop.setText("")

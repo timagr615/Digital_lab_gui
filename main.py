@@ -4,14 +4,21 @@ import sys
 import csv
 import random
 from random import randint
-from time import localtime, strftime
+from time import localtime, strftime, time
 import pandas as pd
 import xlsxwriter
 import random
+import openpyxl
+from openpyxl.chart.axis import DateAxis
+
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import PatternFill, Border, Side, Alignment
+from openpyxl.chart import LineChart, Reference, ScatterChart
+from openpyxl.chart.series import SeriesLabel, Series
 
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
-from PySide6 import QtGui, QtWidgets
+from PySide6 import QtGui, QtWidgets, QtCore
 from PySide6.QtCore import QTimer, QThread
 from PySide6.QtCore import QFile
 from PySide6.QtGui import QPainter
@@ -54,6 +61,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         # self.graphWidget = pg.GraphicsLayoutWidget()
         # graphWidget sd
+        self.time0 = 0
         self.downloader = None
         self.graphWidget_sd = pg.PlotWidget()
         self.x_plot_sd = list(range(1000))
@@ -159,6 +167,7 @@ class MainWindow(QMainWindow):
 
         self.timers = [QTimer() for _ in range(11)]
         for i in self.timers:
+            i.setTimerType(QtCore.Qt.TimerType.PreciseTimer)
             i.timeout.connect(self.handle_timeout)
 
         self.sensors = [communication.Sensor(index=i) for i in range(11)]
@@ -182,10 +191,184 @@ class MainWindow(QMainWindow):
         self.ui.label_5.setText(f'© DCIE {now}')
         self.wai_sd = 0x0
 
+    def export(self, dataset: dict, file_path: str):
+        try:
+            if dataset['Время']:
+                df = pd.DataFrame(dataset)
+                df.drop(labels=[0,1,2,3], axis=0, inplace=True)
+                df.reset_index(drop=True, inplace=True)
+                # print(df)
+                # df.to_excel(writer, sheet_name=sensor_name[self.sensors[self.last_btn_clicked].who_am_i])
+                wb = openpyxl.Workbook()
+                ws = wb.active
+
+                redFill = PatternFill(start_color='f0f0f0',
+                                      end_color='f0f0f0',
+                                      fill_type='solid')
+                blackFill = PatternFill(start_color='00808080',
+                                        end_color='00808080',
+                                        fill_type='solid')
+                thin = Side(border_style="thin", color="000000")
+                # wb.create_sheet(sensor_name[self.sensors[self.last_btn_clicked].who_am_i], 0)
+                ws.title = sensor_name[self.sensors[self.last_btn_clicked].who_am_i]
+                for i in dataframe_to_rows(df, index=True, header=True):
+                    ws.append(i)
+
+                ch = ws['B2']
+                ws.freeze_panes = ch
+                min_row = ws.min_row
+                max_row = ws.max_row
+                min_col = ws.min_column
+                ws.column_dimensions['B'].width = 30
+                ws.column_dimensions['C'].width = 25
+                ws.column_dimensions['D'].width = 20
+                ch1 = ws.cell(1, min_col)
+                ch2 = ws.cell(1, min_col + 1)
+                ch3 = ws.cell(1, min_col + 2)
+                ch4 = ws.cell(1, min_col + 3)
+                ch1.fill = blackFill
+                ch2.fill = blackFill
+                ch3.fill = blackFill
+                ch4.fill = blackFill
+                for i in range(1, max_row):
+                    c = ws.cell(i + 1, min_col)
+                    c1 = ws.cell(i + 1, min_col + 1)
+                    c2 = ws.cell(i + 1, min_col + 2)
+                    c3 = ws.cell(i + 1, min_col + 3)
+                    c.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+                    c1.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+                    c2.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+                    c3.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+                    c.alignment = Alignment(horizontal="center", vertical="center")
+                    c1.alignment = Alignment(horizontal="center", vertical="center")
+                    c2.alignment = Alignment(horizontal="center", vertical="center")
+                    c3.alignment = Alignment(horizontal="center", vertical="center")
+                    if i % 2 == 0:
+                        c.fill = redFill
+                        c1.fill = redFill
+                        c2.fill = redFill
+                        c3.fill = redFill
+                ws.delete_rows(min_row + 1)
+                ws.delete_rows(min_row + 1)
+
+                chart = ScatterChart()
+                chart.height = 15
+                chart.width = 20
+                # data = Reference(ws, min_col=4, min_row=1, max_col=4, max_row=max_row)
+                data = Reference(ws, min_col=4, min_row=1, max_col=4, max_row=max_row)
+                chart.title = sensor_name[self.sensors[self.last_btn_clicked].who_am_i]
+                chart.style = 13
+                chart.y_axis.title = sensor_unit[self.sensors[self.last_btn_clicked].who_am_i]
+                # chart.x_axis = DateAxis(crossAx=100)
+                # chart.x_axis.number_format = 'M-ss'
+                # chart.x_axis.majorTimeUnit = "days"
+                chart.x_axis.title = "Время эксперимента, с"
+                # chart.add_data(data, titles_from_data=True)
+                dates = Reference(ws, min_col=3, min_row=1, max_col=3, max_row=max_row)
+                series = openpyxl.chart.Series(data, dates, title_from_data=True)
+                # chart.set_categories(dates)
+                chart.series.append(series)
+                chart.legend.title = sensor_unit[self.sensors[self.last_btn_clicked].who_am_i]
+                ws.add_chart(chart, "F2")
+
+                wb.save(file_path)
+        except FileNotFoundError as e:
+            print(f'File save error: {e}')
+
+    def export_sd(self, sensors: list, file_path: str):
+        wb = openpyxl.Workbook()
+        # ws = wb.active
+        #ws = []
+        count = 0
+        '''for i, j in enumerate(sensors):
+            ws.append(wb.create_sheet(j.name, i))'''
+        try:
+            for i, j in enumerate(sensors):
+
+                if j.dataset['Время']:
+                    ws = wb.create_sheet(j.name, count)
+                    count += 1
+                    df = pd.DataFrame(j.dataset)
+                    # df.to_excel(writer, sheet_name=sensor_name[self.sensors[self.last_btn_clicked].who_am_i])
+
+                    redFill = PatternFill(start_color='f0f0f0',
+                                          end_color='f0f0f0',
+                                          fill_type='solid')
+                    blackFill = PatternFill(start_color='00808080',
+                                            end_color='00808080',
+                                            fill_type='solid')
+                    thin = Side(border_style="thin", color="000000")
+                    # wb.create_sheet(sensor_name[self.sensors[self.last_btn_clicked].who_am_i], 0)
+                    ws.title = sensor_name[j.who_am_i]
+                    for k in dataframe_to_rows(df, index=True, header=True):
+                        ws.append(k)
+
+                    ch = ws['B2']
+                    ws.freeze_panes = ch
+                    min_row = ws.min_row
+                    max_row = ws.max_row
+                    min_col = ws.min_column
+                    ws.column_dimensions['B'].width = 30
+                    ws.column_dimensions['C'].width = 25
+                    ws.column_dimensions['D'].width = 20
+                    ch1 = ws.cell(1, min_col)
+                    ch2 = ws.cell(1, min_col + 1)
+                    ch3 = ws.cell(1, min_col + 2)
+                    ch4 = ws.cell(1, min_col + 3)
+                    ch1.fill = blackFill
+                    ch2.fill = blackFill
+                    ch3.fill = blackFill
+                    ch4.fill = blackFill
+                    for l in range(1, max_row):
+                        c = ws.cell(l + 1, min_col)
+                        c1 = ws.cell(l + 1, min_col + 1)
+                        c2 = ws.cell(l + 1, min_col + 2)
+                        c3 = ws.cell(l + 1, min_col + 3)
+                        c.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+                        c1.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+                        c2.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+                        c3.border = Border(top=thin, left=thin, right=thin, bottom=thin)
+                        c.alignment = Alignment(horizontal="center", vertical="center")
+                        c1.alignment = Alignment(horizontal="center", vertical="center")
+                        c2.alignment = Alignment(horizontal="center", vertical="center")
+                        c3.alignment = Alignment(horizontal="center", vertical="center")
+                        if l % 2 == 0:
+                            c.fill = redFill
+                            c1.fill = redFill
+                            c2.fill = redFill
+                            c3.fill = redFill
+                    ws.delete_rows(min_row + 1)
+                    ws.delete_rows(min_row + 1)
+
+                    chart = LineChart()
+                    chart.height = 15
+                    chart.width = 20
+                    # data = Reference(ws, min_col=4, min_row=1, max_col=4, max_row=max_row)
+                    data = Reference(ws, min_col=4, min_row=1, max_col=4, max_row=max_row)
+                    chart.title = sensor_name[j.who_am_i]
+                    chart.style = 11
+                    chart.y_axis.title = sensor_unit[j.who_am_i]
+                    # chart.x_axis = DateAxis(crossAx=100)
+                    # chart.x_axis.number_format = 'M-ss'
+                    # chart.x_axis.majorTimeUnit = "days"
+                    chart.x_axis.title = "Время эксперимента, с"
+                    chart.add_data(data, titles_from_data=True)
+                    dates = Reference(ws, min_col=3, min_row=1, max_col=3, max_row=max_row)
+                    # series = openpyxl.chart.Series(data, dates, title_from_data=True)
+                    chart.set_categories(dates)
+                    # chart.series.append(series)
+                    chart.legend.title = sensor_unit[j.who_am_i]
+                    ws.add_chart(chart, "F2")
+
+            wb.save(file_path)
+        except FileNotFoundError as e:
+            print(f'File save error: {e}')
+
     def btn_clear_action(self):
         self.sensors[self.last_btn_clicked].x = list(range(100))
         self.sensors[self.last_btn_clicked].y = [0 for _ in range(100)]
         self.sensors[self.last_btn_clicked].x_time = list()
+        self.sensors[self.last_btn_clicked].x_timestamp = list()
         self.x_plot = list(range(1000))
         self.y_plot = [0 for _ in range(1000)]
         self.data_line.setData(self.x_plot, self.y_plot)
@@ -196,20 +379,14 @@ class MainWindow(QMainWindow):
             self.timers[self.last_btn_clicked].stop()
             self.sensors[self.last_btn_clicked].running = False
         dataset = {'Время': self.sensors[self.last_btn_clicked].x_time,
-                   sensor_unit[self.sensors[self.last_btn_clicked].who_am_i]: self.sensors[self.last_btn_clicked].y[
-                                                                              100:]}
+                   'Время эксперимента': self.sensors[self.last_btn_clicked].x_timestamp,
+                   f'Значение, {sensor_unit[self.sensors[self.last_btn_clicked].who_am_i]}':
+                       self.sensors[self.last_btn_clicked].y[100:]}
 
         file_path = QFileDialog.getSaveFileName(self, 'Сохранить')[0]
         if file_path[-5:] != '.xlsx':
             file_path += '.xlsx'
-        try:
-            with pd.ExcelWriter(file_path, engine='xlsxwriter') as writer:
-                if dataset['Время']:
-                    df = pd.DataFrame(dataset)
-                    df.to_excel(writer, sheet_name=sensor_name[self.sensors[self.last_btn_clicked].who_am_i])
-
-        except FileNotFoundError as e:
-            print(f'File save error: {e}')
+        self.export(dataset, file_path)
         if not self.timers[self.last_btn_clicked].isActive():
             self.timers[self.last_btn_clicked].start()
             self.sensors[self.last_btn_clicked].running = True
@@ -220,8 +397,8 @@ class MainWindow(QMainWindow):
         file_path = QFileDialog.getSaveFileName(self, title)[0]
         if file_path[-5:] != '.xlsx':
             file_path += '.xlsx'
-
-        try:
+        self.export_sd(self.sensors_sd, file_path)
+        '''try:
             with pd.ExcelWriter(file_path, engine='xlsxwriter') as writer:
                 for i in self.sensors_sd:
                     if i.dataset['Время']:
@@ -229,7 +406,7 @@ class MainWindow(QMainWindow):
                         df = pd.DataFrame(i.dataset)
                         df.to_excel(writer, sheet_name=i.name)
         except FileNotFoundError as e:
-            print(f'File save error: {e}')
+            print(f'File save error: {e}')'''
 
     def sd_clear_action(self):
         self.dl.clear_sd()
@@ -358,12 +535,18 @@ class MainWindow(QMainWindow):
         pos = evt
         mousePoint = self.vb.mapSceneToView(pos)
         index = mousePoint.x()
-
-        ind = int((index-self.x_plot[0]) * 10) + 8
-        if ind > 999:
-            ind = 999
-        if ind < 0:
-            ind = 0
+        if self.ui.checkBox.isChecked():
+            ind = int((index-self.x_plot[0]) * 10) + 8
+            if ind > 999:
+                ind = 999
+            if ind < 0:
+                ind = 0
+        else:
+            ind = int(index-self.x_plot[0])
+            if ind > 99:
+                ind = 99
+            if ind < 0:
+                ind = 0
         '''y_ind = round((index - self.x_plot[0]) * 10) + 10
         if y_ind >= 1000:
             y_ind = 999
@@ -390,20 +573,30 @@ class MainWindow(QMainWindow):
         return math.sin(x * 3) + 4 * math.sin(x)
 
     def update_data(self, i: int):
+
         # self.sensors[i].x = self.sensors[i].x[1:]
         self.sensors[i].x.append(self.sensors[i].x[-1] + 1)
         t = strftime("%Y-%m-%d %H:%M:%S", localtime())
         ts = datetime.datetime.utcnow().strftime('.%f')[:-3]
         t += ts
         self.sensors[i].x_time.append(t)
+        time0 = datetime.datetime.strptime(self.sensors[i].x_time[0], "%Y-%m-%d %H:%M:%S.%f")
+        time1 = datetime.datetime.strptime(t, "%Y-%m-%d %H:%M:%S.%f")
+
+        timestamp = round((time1 - time0).total_seconds(), 2)
+        self.sensors[i].x_timestamp.append(timestamp)
         self.ui.btn_clear.setEnabled(True)
         data = self.dl.get_data_from_sensor(self.sensors[i])
         self.sensors[i].y.append(round(data + random.uniform(0.01, 0.05), 2))
         if self.last_btn_clicked != i:
             return
-        self.x_plot = np.linspace(min(self.sensors[i].x[-100:]), max(self.sensors[i].x[-100:]), 1000)
-        spl = make_interp_spline(self.sensors[i].x[-100:], self.sensors[i].y[-100:])
-        self.y_plot = spl(self.x_plot)
+        if self.ui.checkBox.isChecked():
+            self.x_plot = np.linspace(min(self.sensors[i].x[-100:]), max(self.sensors[i].x[-100:]), 1000)
+            spl = make_interp_spline(self.sensors[i].x[-100:], self.sensors[i].y[-100:])
+            self.y_plot = spl(self.x_plot)
+        else:
+            self.x_plot = self.sensors[i].x[-100:]
+            self.y_plot = self.sensors[i].y[-100:]
         for i, j in enumerate(self.y_plot):
             if j < 0:
                 self.y_plot[i] = 0
@@ -416,11 +609,14 @@ class MainWindow(QMainWindow):
 
         except ValueError:
             new_hz = 1
-        if new_hz > 10:
-            new_hz = 10
+        if new_hz > 1000:
+            new_hz = 1000
             sender.setText(str(new_hz))
         self.sensors[self.last_btn_clicked].frequency = new_hz
-        self.timers[self.last_btn_clicked].setInterval(int(1 / new_hz * 1000))
+        interval = int(1 / new_hz * 1000)
+        if interval == 0:
+            interval = 1
+        self.timers[self.last_btn_clicked].setInterval(interval)
 
     def edit_hz_action(self):
         sender = self.sender()
@@ -432,12 +628,14 @@ class MainWindow(QMainWindow):
             new_hz = int(sender.text())
         except ValueError:
             new_hz = 1
-        if new_hz > 10:
-            new_hz = 10
+        if new_hz > 1000:
+            new_hz = 1000
             sender.setText(str(new_hz))
         self.sensors[idx].frequency = new_hz
-        # print(int(1/new_hz*1000))
-        self.timers[idx].setInterval(int(1 / new_hz * 1000))
+        interval = int(1 / new_hz * 1000)
+        if interval == 0:
+            interval = 1
+        self.timers[idx].setInterval(interval)
 
     def btn_start_one_sensor(self):
         # print(self.sender)
@@ -450,6 +648,7 @@ class MainWindow(QMainWindow):
         if not self.timers[idx].isActive():
             self.timers[idx].start()
             self.sensors[idx].running = True
+            self.sensors[idx].timestamp = round(time(), 2)
 
     def btn_stop_one_sensor(self):
 
@@ -464,6 +663,8 @@ class MainWindow(QMainWindow):
             self.sensors[idx].running = False
 
     def handle_timeout(self):
+        # print(time() - self.time0)
+
         sender = self.sender()
         idx = 0
         for i, j in enumerate(self.timers):
@@ -473,6 +674,7 @@ class MainWindow(QMainWindow):
 
         if self.sensors[idx].running:
             self.update_data(idx)
+
         if self.last_btn_clicked == idx:
             # print(self.x_plot[0])
             # print(self.sensors[idx].unit)
@@ -481,7 +683,8 @@ class MainWindow(QMainWindow):
             self.data_line.setData(self.x_plot, self.y_plot)
             self.graphWidget.setXRange(int(self.x_plot[0]), int(self.x_plot[-1]), padding=None, update=True)
         self.sensor_values[idx].setText(f'{round(self.sensors[idx].y[-1], 2)} {self.sensors[idx].unit}')
-        # if self.ui.stackedWidget.currentWidget() is self.ui.one_sensor:
+        # print(f'handle timeout time: {time() - self.time0}')
+        self.time0 = time()
 
     def check_device_connection(self):
         # print('check_device_connection')
@@ -540,6 +743,7 @@ class MainWindow(QMainWindow):
         if not self.timers[self.last_btn_clicked].isActive():
             self.timers[self.last_btn_clicked].start()
             self.sensors[self.last_btn_clicked].running = True
+            self.sensors[self.last_btn_clicked].timestamp = round(time(), 2)
 
     def btn_stop_action(self):
         if self.timers[self.last_btn_clicked].isActive():
