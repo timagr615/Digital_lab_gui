@@ -201,6 +201,8 @@ class DlmmUSB:
         self.sd_files: list = []
         self.stop = 0
         self.sd_file: list = list()
+        self.load_app_started = False
+        self.load_app = []
         # self.time = time.time()
 
     def parse_sd_file(self, data: list):
@@ -332,7 +334,7 @@ class DlmmUSB:
 
         try:
             # self.device.write(0x1, [ReportId.REPORT_OUT, UsbCmd.SENSOR_NUM], 1000)
-            if self.stop:
+            if self.stop or self.load_app_started:
                 return
             self.device.write(0x1, [0x21, 0x11], 1000)
             ret = self.device.read(0x81, 64, 1000)
@@ -364,7 +366,7 @@ class DlmmUSB:
         if self.device is not None and sensor.connected:
             # print('sens get data')
             try:
-                if self.stop == 1:
+                if self.stop == 1 or self.load_app_started:
                     return
                 if self.start_condition == 0:
                     self.set_start_condition(0x20)
@@ -429,7 +431,7 @@ class DlmmUSB:
         try:
             self.device.write(0x1, [0x21, 0x27], 1000)
             ret = self.device.read(0x81, 64, 1000)
-            # print(ret)
+            #print(ret)
             self.sd_files.clear()
 
             data = (ctypes.c_char * 4)()
@@ -548,13 +550,25 @@ class DlmmUSB:
         except AttributeError:
             print("ATTRIBUTE ERR clear sd")
 
+    def load_new_app(self):
+        if not self.device:
+            return
+        self.load_app_started = True
+        try:
 
-'''class UsbCommunication:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def check_connections() -> tuple:
-        r1, r2, r3 = random.sample(range(0, 7), 3)
-        # print(r1, r2, r3)
-        return r1, r2, r3'''
+            for i in range(3584):
+                if i == 3583:
+                    data_transmit = [0x25, 0x32, 1] + self.load_app[i*32:i*32+32]
+                else:
+                    data_transmit = [0x25, 0x32, 0] + self.load_app[i * 32:i * 32 + 32]
+                self.device.write(0x1, data_transmit, 1000)
+                ret = self.device.read(0x81, 64, 1000)
+                print(i, ret)
+        except usb.core.USBTimeoutError as e:
+            print(f"clear sd Timeout error {e}")
+        except usb.core.USBError as e:
+            print(f"USB ERR clear sd {e}")
+        except AttributeError:
+            print("ATTRIBUTE ERR clear sd")
+        finally:
+            self.load_app_started = False

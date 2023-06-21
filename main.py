@@ -54,6 +54,15 @@ class Downloader(QThread):
         self._usb.get_sd_data(self._sensors, self._index)
 
 
+class DownloaderApp(QThread):
+    def __init__(self, usb: communication.DlmmUSB):
+        super().__init__()
+        self.__usb = usb
+
+    def run(self):
+        self.__usb.load_new_app()
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -63,6 +72,7 @@ class MainWindow(QMainWindow):
         # graphWidget sd
         self.time0 = 0
         self.downloader = None
+        self.downloader_app = None
         self.graphWidget_sd = pg.PlotWidget()
         self.x_plot_sd = list(range(1000))
         self.y_plot_sd = list(range(1000))
@@ -185,11 +195,36 @@ class MainWindow(QMainWindow):
         self.ui.btn_sd_save.clicked.connect(self.btn_save_action)
         self.ui.btn_save.clicked.connect(self.btn_save_main_action)
         self.ui.btn_clear.clicked.connect(self.btn_clear_action)
+        self.ui.btn_load_app.clicked.connect(self.btn_load_action)
         for i in self.sensor_btns:
             i.clicked.connect(self.btn_sensor_action)
         now = strftime("%Y", localtime())
         self.ui.label_5.setText(f'© DCIE {now}')
         self.wai_sd = 0x0
+
+    def btn_load_action(self):
+        file = QFileDialog.getOpenFileName(self)
+        if file[0][-4:] != ".bin":
+            print(file[0][-4:])
+            self.ui.btn_load_app.setText("Файл повреждён")
+            return
+        with open(file[0], "rb") as f:
+            file_content = f.read()
+            for i in file_content:
+                self.dl.load_app.append(i)
+        delta_len_app = 114668 - len(self.dl.load_app)
+        if delta_len_app < 0:
+            self.ui.btn_load_app.setText("Файл повреждён")
+            return
+        self.dl.load_app += [0xFF for _ in range(delta_len_app)]
+        self.ui.btn_load_app.setText("Загрузка")
+        self.downloader_app = DownloaderApp(self.dl)
+        self.downloader_app.finished.connect(self.download_app_finished)
+        self.downloader_app.start()
+
+    def download_app_finished(self):
+        self.ui.btn_load_app.setText("Перезагрузите устройство")
+        del self.downloader_app
 
     def export(self, dataset: dict, file_path: str):
         try:

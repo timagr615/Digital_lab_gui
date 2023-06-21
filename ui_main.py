@@ -951,7 +951,9 @@ class Ui_MainWindow(object):
         self.frame_14.setObjectName(u"frame_14")
         self.frame_14.setFrameShape(QFrame.StyledPanel)
         self.frame_14.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_7 = QHBoxLayout(self.frame_14)
+        self.verticalLayout_43 = QVBoxLayout(self.frame_14)
+        self.verticalLayout_43.setObjectName(u"verticalLayout_43")
+        self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.label_15 = QLabel(self.frame_14)
         self.label_15.setObjectName(u"label_15")
@@ -965,6 +967,14 @@ class Ui_MainWindow(object):
         self.label_6.setObjectName(u"label_6")
 
         self.horizontalLayout_7.addWidget(self.label_6)
+
+
+        self.verticalLayout_43.addLayout(self.horizontalLayout_7)
+
+        self.btn_load_app = QPushButton(self.frame_14)
+        self.btn_load_app.setObjectName(u"btn_load_app")
+
+        self.verticalLayout_43.addWidget(self.btn_load_app)
 
 
         self.verticalLayout.addWidget(self.frame_14)
@@ -2283,6 +2293,7 @@ class Ui_MainWindow(object):
         self.btn_sd_data.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u043d\u043d\u044b\u0435 \u0441 \u043a\u0430\u0440\u0442\u044b \u043f\u0430\u043c\u044f\u0442\u0438", None))
         self.label_15.setText("")
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0441\u043d\u043e\u0432\u043d\u043e\u0439 \u043c\u043e\u0434\u0443\u043b\u044c", None))
+        self.btn_load_app.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u041f\u041e", None))
         self.label_sensor_name.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u0427\u0430\u0441\u0442\u043e\u0442\u0430, \u0413\u0446", None))
         self.lineEdit.setText(QCoreApplication.translate("MainWindow", u"1", None))
