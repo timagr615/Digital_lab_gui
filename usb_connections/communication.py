@@ -1,8 +1,10 @@
 import enum
+import os
 import random
 import struct
 import time
 import ctypes
+from os.path import isfile, join
 from sys import platform
 
 import libusb_package
@@ -13,6 +15,9 @@ from time import localtime, strftime
 from datetime import datetime
 from collections import deque
 from PySide6.QtCore import Qt, QTimer, Slot
+import pandas as pd
+
+from usb_connections.msc import write_bin_file_to_device, remove_file, get_device_path_linux
 
 sensor_name = {0xBD: "Датчик шума", 0xBC: "Термопара", 0xBA: "Датчик тока",
                0xBE: "Датчик пульса", 0xBB: "Датчик  освещенности", 0xBF: "Датчик ультрафиолета",
@@ -22,8 +27,8 @@ sensor_unit = {0xBD: "дБ", 0xBC: "°C", 0xBA: "A",
                0xBE: "", 0xBB: "люкс", 0xBF: "Вт/(м²)",
                0xB1: "Па", 0xB2: "%", 0xB3: "°C"}
 sensor_val = {0xBD: "p", 0xBC: "T", 0xBA: "I",
-               0xBE: "", 0xBB: "E", 0xBF: "E",
-               0xB1: "p", 0xB2: "H", 0xB3: "T"}
+              0xBE: "", 0xBB: "E", 0xBF: "E",
+              0xB1: "p", 0xB2: "H", 0xB3: "T"}
 index_to_cmd = {0: 0x12, 1: 0x13, 2: 0x14, 3: 0x15, 4: 0x16, 5: 0x17, 6: 0x18, 7: 0x19, 8: 0x24, 9: 0x25, 10: 0x26,
                 11: 0x27, 12: 0x28}
 
@@ -61,6 +66,13 @@ class SdFile:
         self.lb_b: list[int] = lb_b
 
 
+class MscFile:
+    def __init__(self, date: datetime, size: float, path: str):
+        self.date: datetime = date
+        self.size: float = size
+        self.path: str = path
+
+
 class SensorSd:
     def __init__(self, index: int):
         self.id: int = index
@@ -85,13 +97,13 @@ class SensorSd:
         time_sd = date.strftime("%Y-%m-%d %H:%M:%S:%f")
 
     def parse_first_sd_data(self, data):
-        id_to_data_idx = 5*self.id + 9
+        id_to_data_idx = 5 * self.id + 9
         # print(id_to_data_idx)
         wai = data[id_to_data_idx]
 
         if wai != 0:
 
-            #print(data)
+            # print(data)
             self.available = True
             self.who_am_i = wai
             self.name = sensor_name[self.who_am_i]
@@ -160,12 +172,11 @@ class SensorSd:
                     data_v = 0
             self.y.append(data_v)
             self.dataset["Время"].append(time_sd)
-            time0 = datetime.strptime(self.dataset['Время'][0]+'000', "%Y-%m-%d %H:%M:%S:%f")
-            time1 = datetime.strptime(time_sd+'000', "%Y-%m-%d %H:%M:%S:%f")
+            time0 = datetime.strptime(self.dataset['Время'][0] + '000', "%Y-%m-%d %H:%M:%S:%f")
+            time1 = datetime.strptime(time_sd + '000', "%Y-%m-%d %H:%M:%S:%f")
             timestamp = round((time1 - time0).total_seconds(), 2)
             self.dataset["Время эксперимента"].append(timestamp)
             self.dataset[f'Значение, {sensor_unit[self.who_am_i]}'].append(data_v)
-
 
 
 class Sensor:
@@ -203,6 +214,7 @@ class DlmmUSB:
         self.sd_file: list = list()
         self.load_app_started = False
         self.load_app = []
+        self.msc_path = ''
         # self.time = time.time()
 
     def parse_sd_file(self, data: list):
@@ -212,24 +224,24 @@ class DlmmUSB:
                         hour=data[4],
                         minute=data[5],
                         second=data[6],
-                        microsecond=(999 - data[7])*1000)
+                        microsecond=(999 - data[7]) * 1000)
         one_mesurement = []
         time_sd = date.strftime("%Y-%m-%d %H:%M:%S:%f")
         one_mesurement.append(time_sd)
         for i in range(11):
-            one_mesurement.append(data[9+i*5])
+            one_mesurement.append(data[9 + i * 5])
             datac = (ctypes.c_char * 4)()
-            datac[0] = data[10 + i*5]
-            datac[1] = data[11 + i*5]
-            datac[2] = data[12 + i*5]
-            datac[3] = data[13 + i*5]
+            datac[0] = data[10 + i * 5]
+            datac[1] = data[11 + i * 5]
+            datac[2] = data[12 + i * 5]
+            datac[3] = data[13 + i * 5]
             data_f = struct.unpack('f', bytes(datac))
             data_v = round(data_f[0], 2)
-            if data[9+i*5] == 0xBE and data_v == -999:
+            if data[9 + i * 5] == 0xBE and data_v == -999:
                 data_v = 0
-            elif data[9+i*5] == 0xBE:
+            elif data[9 + i * 5] == 0xBE:
                 data_v = int(data_v)
-            elif data[9+i*5] == 0xBF and abs(data_v) < 0.55:
+            elif data[9 + i * 5] == 0xBF and abs(data_v) < 0.55:
                 data_v = 0.0
             one_mesurement.append(data_v)
         self.sd_file.append(one_mesurement)
@@ -252,14 +264,14 @@ class DlmmUSB:
             elif platform == "win32":
                 # print(f"WINDOWS {platform}")
                 dev = libusb_package.find(idVendor=self.vid, idProduct=self.pid, backend=libusb1_backend)
-
-            # print(dev)
+            # print(os.getenv("/"))
             # dev = usb.core.find(idVendor=self.vid, idProduct=self.pid)
             # print(dev)
             if dev is self.device and dev is not None:
                 return True
             if not dev:
                 self.device = None
+                self.sd_files.clear()
                 return False
             if self.device is None:
                 self.first_connection = True
@@ -285,11 +297,13 @@ class DlmmUSB:
         except ValueError as e:
             print(f'check_device Timeout error {e}')
             self.device = None
+            self.sd_files.clear()
             return False
         except usb.core.USBError as e:
             print(f'check_device USB error {e}')
             if "Resource busy" not in str(e):
                 self.device = None
+                self.sd_files.clear()
             return False
 
     def get_start_condition(self) -> None:
@@ -425,40 +439,61 @@ class DlmmUSB:
         except AttributeError:
             print("ATTRIBUTE ERR set date")
 
+    def get_msc_info(self):
+        self.msc_path = get_device_path_linux()
+        files = [f for f in os.listdir(self.msc_path[0]) if isfile(join(self.msc_path[0], f)) and f[-4:] == ".CSV"]
+        dates = [f.date for f in self.sd_files]
+        for file in files:
+            dat = datetime.strptime(file[:8], "%m%d%H%M")
+            d = dat.replace(year=datetime.now().year)
+            if d in dates:
+                continue
+            path = join(self.msc_path[0], file)
+
+            size = round(os.path.getsize(join(self.msc_path[0], file)) / 1024, 1)
+            self.sd_files.append(MscFile(d, size, path))
+            self.sd_files.sort(key=lambda x: x.date, reverse=True)
+            self.sd_checked = True
+            if len(self.sd_files) == 0:
+                self.sd_empty = 1
+            else:
+                self.sd_empty = False
+        # print(self.sd_files)
+
     def get_sd_info(self):
         if not self.device:
             return
         try:
             self.device.write(0x1, [0x21, 0x27], 1000)
             ret = self.device.read(0x81, 64, 1000)
-            #print(ret)
+            # print(ret)
             self.sd_files.clear()
 
             data = (ctypes.c_char * 4)()
             for i in range(4):
-                if ret[8+i*14] == 0 or ret[9+i*14] == 0:
+                if ret[8 + i * 14] == 0 or ret[9 + i * 14] == 0:
                     continue
-                date = datetime(year=2000 + ret[7 + i*14],
-                                month=ret[8 + i*14],
-                                day=ret[9 + i*14],
-                                hour=ret[10 + i*14],
-                                minute=ret[11 + i*14],
-                                second=ret[12 + i*14])
-                data[0] = ret[13 + i*14]
-                data[1] = ret[14 + i*14]
-                data[2] = ret[15 + i*14]
-                data[3] = ret[16 + i*14]
+                date = datetime(year=2000 + ret[7 + i * 14],
+                                month=ret[8 + i * 14],
+                                day=ret[9 + i * 14],
+                                hour=ret[10 + i * 14],
+                                minute=ret[11 + i * 14],
+                                second=ret[12 + i * 14])
+                data[0] = ret[13 + i * 14]
+                data[1] = ret[14 + i * 14]
+                data[2] = ret[15 + i * 14]
+                data[3] = ret[16 + i * 14]
                 fb = struct.unpack('I', bytes(data))[0]
-                data[0] = ret[17 + i*14]
-                data[1] = ret[18 + i*14]
-                data[2] = ret[19 + i*14]
-                data[3] = ret[20 + i*14]
+                data[0] = ret[17 + i * 14]
+                data[1] = ret[18 + i * 14]
+                data[2] = ret[19 + i * 14]
+                data[3] = ret[20 + i * 14]
                 lb = struct.unpack('I', bytes(data))[0]
                 size = round((lb - fb) * 496 / 1024, 2)
                 # print(date)
                 self.sd_files.append(SdFile(date, fb, lb, size,
-                                            [ret[13 + i*14], ret[14 + i*14], ret[15 + i*14], ret[16 + i*14]],
-                                            [ret[17 + i*14], ret[18 + i*14], ret[19 + i*14], ret[20 + i*14]]))
+                                            [ret[13 + i * 14], ret[14 + i * 14], ret[15 + i * 14], ret[16 + i * 14]],
+                                            [ret[17 + i * 14], ret[18 + i * 14], ret[19 + i * 14], ret[20 + i * 14]]))
             self.sd_files.sort(key=lambda x: x.date, reverse=True)
             self.sd_checked = True
             if len(self.sd_files) == 0:
@@ -473,12 +508,72 @@ class DlmmUSB:
         except AttributeError:
             print("ATTRIBUTE ERR get_sd_info")
 
+    def get_msc_data(self, sensors: list[SensorSd], index: int):
+        if not self.device:
+            return
+        for i in sensors:
+            i.available = False
+
+        try:
+            dataframe = pd.read_csv(self.sd_files[index].path, header=None)
+            dates = pd.date_range(min(dataframe[0]), max(dataframe[0]), periods=len(dataframe))
+            dates = dates.to_pydatetime()
+            dates_str = [date.strftime("%Y-%m-%d %H:%M:%S:%f")[:-3] for date in dates]
+            time0 = dates[0]
+            timestamp = [round((t - time0).total_seconds(), 2) for t in dates]
+            sensors_info = []
+            for i in range(1, 22):
+                # print(dataframe[i][0])
+                # print((dataframe[i] == 0).all())
+                if i % 2 != 0 and not (dataframe[i] == 0).all():
+                    unique_wai = list(dataframe[i].unique())
+                    if len(unique_wai) < 3:
+                        try:
+                            unique_wai.remove(0)
+                        except ValueError:
+                            pass
+                        # print(dataframe[i].unique(), i)
+                        # print(unique_wai)
+                        sensors_info.append((unique_wai[0], i, i+1))
+            # print(sensors_info)
+            sensors_count = len(sensors_info) % 12
+            for i in range(sensors_count):
+                # print(sensors_info[i][2])
+                data = list(dataframe[sensors_info[i][2]])
+                x = [i for i in range(len(data))]
+                wai = sensors_info[i][0]
+                for j, d in enumerate(data):
+                    if wai == 0xBE and d == -999:
+                        data[j] = 0
+                    elif wai == 0xBE:
+                        data[j] = int(d)
+                    elif wai == 0xBF and abs(d) < 0.55:
+                        data[j] = 0.0
+                    if wai == 0xBE:
+                        if d < -1:
+                            data[j] = 0
+                #print(data)
+
+                sensors[i].who_am_i = wai
+                sensors[i].available = True
+                sensors[i].name = sensor_name[wai]
+                sensors[i].x = x
+                sensors[i].y = data
+                sensors[i].dataset["Время"] = dates_str
+                sensors[i].dataset["Время эксперимента"] = timestamp
+                sensors[i].dataset[f'Значение, {sensor_unit[wai]}'] = data
+
+        except Exception as e:
+            print(f"Error in opening sd file: {e}")
+            return
+
     def get_sd_data(self, sensors: list[SensorSd], index: int):
         if not self.device:
             return
         for i in sensors:
             i.available = False
         try:
+            # pd.ree
             self.device.write(0x1, [0x23, 0x30,
                                     self.sd_files[index].fb_b[0], self.sd_files[index].fb_b[1],
                                     self.sd_files[index].fb_b[2], self.sd_files[index].fb_b[3],
@@ -497,7 +592,7 @@ class DlmmUSB:
                 self.device.write(0x1, [0x21, 0x28], 2000)
                 ret = self.device.read(0x81, 64, 1000)
                 # print(ret)
-                self.parse_sd_file(ret)
+                # self.parse_sd_file(ret)???????
                 if ret[0] == 16:
                     for i in sensors:
                         i.parse_sd_data(ret)
@@ -507,8 +602,8 @@ class DlmmUSB:
             print(f"get_sd_data Timeout error {e}")
         except usb.core.USBError as e:
             print(f"USB ERR get_sd_data {e}")
-        except AttributeError:
-            print("ATTRIBUTE ERR get_sd_data")
+        except AttributeError as e:
+            print(f"ATTRIBUTE ERR get_sd_data {e}")
 
     def send_exit(self):
         if not self.device:
@@ -550,20 +645,23 @@ class DlmmUSB:
         except AttributeError:
             print("ATTRIBUTE ERR clear sd")
 
-    def load_new_app(self):
+    def load_new_app(self, dev_path, filename, content, old_filename):
         if not self.device:
             return
         self.load_app_started = True
         try:
-
-            for i in range(3584):
+            write_bin_file_to_device(dev_path, filename, content)
+            remove_file(dev_path, old_filename)
+            '''for i in range(3584):
                 if i == 3583:
                     data_transmit = [0x25, 0x32, 1] + self.load_app[i*32:i*32+32]
                 else:
                     data_transmit = [0x25, 0x32, 0] + self.load_app[i * 32:i * 32 + 32]
                 self.device.write(0x1, data_transmit, 1000)
                 ret = self.device.read(0x81, 64, 1000)
-                print(i, ret)
+                print(i, ret)'''
+            self.device.write(0x1, [0x21, 0x36], 1000)
+            ret = self.device.read(0x81, 64, 1000)
         except usb.core.USBTimeoutError as e:
             print(f"clear sd Timeout error {e}")
         except usb.core.USBError as e:

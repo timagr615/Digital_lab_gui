@@ -1,11 +1,15 @@
 import datetime
 import math
+import os
 import sys
+import time
 import csv
 import random
+from multiprocessing import Process
 from random import randint
 from time import localtime, strftime, time
 import pandas as pd
+import psutil
 import xlsxwriter
 import random
 import openpyxl
@@ -30,6 +34,7 @@ from chart import Chart
 import pyqtgraph as pg
 from usb_connections import communication
 from usb_connections.communication import sensor_unit, sensor_name, sensor_val
+from usb_connections.msc import get_device_path_linux, write_bin_file_to_device
 
 QtGui.QImageReader.setAllocationLimit(0)
 
@@ -43,6 +48,36 @@ wai = [0xBD, 0xBA, 0xBE,
        0xB1, 0xB2, 0xB3]
 
 
+class MscInfo(QThread):
+    def __init__(self, usb: communication.DlmmUSB):
+        super().__init__()
+        self.__usb = usb
+
+    def disk(self):
+        d = psutil.disk_partitions()
+
+    def run(self):
+
+        try:
+            p = Process(target=self.disk)
+            p.start()
+            # p.join()
+            while p.is_alive():
+                QThread.sleep(1)
+            self.__usb.get_msc_info()
+        except TypeError as e:
+            QThread.sleep(5)
+            # print(f"MSC not loaded {e}, sleep 10 sec.")
+            p = Process(target=self.disk)
+            p.start()
+            # p.join()
+            while p.is_alive():
+                # print("procc is alive")
+                QThread.sleep(1)
+
+            self.__usb.get_msc_info()
+
+
 class Downloader(QThread):
     def __init__(self, usb: communication.DlmmUSB, sensors: list[communication.SensorSd], index: int):
         super().__init__()
@@ -51,16 +86,21 @@ class Downloader(QThread):
         self._index = index
 
     def run(self):
-        self._usb.get_sd_data(self._sensors, self._index)
+        # self._usb.get_sd_data(self._sensors, self._index)
+        self._usb.get_msc_data(self._sensors, self._index)
 
 
 class DownloaderApp(QThread):
-    def __init__(self, usb: communication.DlmmUSB):
+    def __init__(self, usb: communication.DlmmUSB, dev_path, filename, content, old_filename):
         super().__init__()
         self.__usb = usb
+        self.__dev_path = dev_path
+        self.__filename = filename
+        self.__content = content
+        self.__old_filename = old_filename
 
     def run(self):
-        self.__usb.load_new_app()
+        self.__usb.load_new_app(self.__dev_path, self.__filename, self.__content, self.__old_filename)
 
 
 class MainWindow(QMainWindow):
@@ -73,6 +113,7 @@ class MainWindow(QMainWindow):
         self.time0 = 0
         self.downloader = None
         self.downloader_app = None
+        self.msc_info = None
         self.graphWidget_sd = pg.PlotWidget()
         self.x_plot_sd = list(range(1000))
         self.y_plot_sd = list(range(1000))
@@ -119,7 +160,7 @@ class MainWindow(QMainWindow):
 
         # self.usb = communication.UsbCommunication()
 
-        self.dl = communication.DlmmUSB(0x5750, 0x0483)
+        self.dl = communication.DlmmUSB(0x52A4, 0x0483)
         self.connection_timer = QTimer()
         self.connection_timer.setInterval(500)
         self.connection_timer.timeout.connect(self.check_device_connection)
@@ -203,22 +244,32 @@ class MainWindow(QMainWindow):
         self.wai_sd = 0x0
 
     def btn_load_action(self):
+        path = get_device_path_linux()
+        # print(path)
+        if path is None:
+            return
         file = QFileDialog.getOpenFileName(self)
+
         if file[0][-4:] != ".bin":
-            print(file[0][-4:])
+            # print(file[0][-4:])
+
             self.ui.btn_load_app.setText("Файл повреждён")
             return
+        filename = file[0][-12:]
         with open(file[0], "rb") as f:
+            # print(file[0])
             file_content = f.read()
-            for i in file_content:
-                self.dl.load_app.append(i)
-        delta_len_app = 114668 - len(self.dl.load_app)
+            #for i in file_content:
+               # self.dl.load_app.append(i)
+        #delta_len_app = 212992 - len(self.dl.load_app)
+        delta_len_app = 212992 - len(file_content)
         if delta_len_app < 0:
             self.ui.btn_load_app.setText("Файл повреждён")
             return
-        self.dl.load_app += [0xFF for _ in range(delta_len_app)]
+        #write_bin_file_to_device(path, file[0][-12:], file_content)
+        # self.dl.load_app += [0xFF for _ in range(delta_len_app)]
         self.ui.btn_load_app.setText("Загрузка")
-        self.downloader_app = DownloaderApp(self.dl)
+        self.downloader_app = DownloaderApp(self.dl, path[0], filename, file_content, path[1])
         self.downloader_app.finished.connect(self.download_app_finished)
         self.downloader_app.start()
 
@@ -230,7 +281,7 @@ class MainWindow(QMainWindow):
         try:
             if dataset['Время']:
                 df = pd.DataFrame(dataset)
-                df.drop(labels=[0,1,2,3], axis=0, inplace=True)
+                df.drop(labels=[0, 1, 2, 3], axis=0, inplace=True)
                 df.reset_index(drop=True, inplace=True)
                 # print(df)
                 # df.to_excel(writer, sheet_name=sensor_name[self.sensors[self.last_btn_clicked].who_am_i])
@@ -313,7 +364,7 @@ class MainWindow(QMainWindow):
     def export_sd(self, sensors: list, file_path: str):
         wb = openpyxl.Workbook()
         # ws = wb.active
-        #ws = []
+        # ws = []
         count = 0
         '''for i, j in enumerate(sensors):
             ws.append(wb.create_sheet(j.name, i))'''
@@ -454,7 +505,8 @@ class MainWindow(QMainWindow):
             if sender is j:
                 idx = i
         self.wai_sd = self.sensors_sd[idx].who_am_i
-        self.x_plot_sd = np.linspace(min(self.sensors_sd[idx].x), max(self.sensors_sd[idx].x), len(self.sensors_sd[idx].x)*10)
+        self.x_plot_sd = np.linspace(min(self.sensors_sd[idx].x), max(self.sensors_sd[idx].x),
+                                     len(self.sensors_sd[idx].x) * 10)
         self.t_plot_sd = self.sensors_sd[idx].dataset['Время']
         spl = make_interp_spline(self.sensors_sd[idx].x, self.sensors_sd[idx].y, 3)
 
@@ -508,8 +560,16 @@ class MainWindow(QMainWindow):
             for i in self.btns_sd:
                 i.setEnabled(False)
                 # i.setVisible(False)
-        self.dl.get_sd_info()
+        # self.dl.get_sd_info()
+        self.ui.stackedWidget.setCurrentWidget(self.ui.sd_page)
+        # print("set sd_page")
+        self.msc_info = MscInfo(self.dl)
+        self.msc_info.finished.connect(self.msc_info_finished)
+        self.msc_info.start()
+        # self.dl.get_msc_info()
         # print(self.ui.comboBox.currentIndex())
+
+    def msc_info_finished(self):
         for i in range(self.ui.comboBox.count()):
             # print(i)
             self.ui.comboBox.removeItem(self.ui.comboBox.currentIndex())
@@ -527,7 +587,7 @@ class MainWindow(QMainWindow):
             date_sd = self.dl.sd_last_data.strftime('%Y-%m-%d')
             self.ui.label_sd_date.setText('Последняя запись ' + date_sd)
         self.ui.label_sd_size.setText(f'{self.dl.sd_last_data_size} кбайт')
-        self.ui.stackedWidget.setCurrentWidget(self.ui.sd_page)
+
 
     def clock(self):
         # print(localtime())
@@ -541,9 +601,9 @@ class MainWindow(QMainWindow):
         index = mousePoint.x()
         # print(index, self.x_plot_sd[-1], len(self.x_plot_sd), len(self.y_plot_sd))
         # y_ind = round((index - self.x_plot_sd[0]) * 10) + 10
-        y_ind = int(index)*10 + 10
+        y_ind = int(index) * 10 + 10
         if y_ind >= len(self.x_plot_sd):
-            y_ind = len(self.x_plot_sd)-1
+            y_ind = len(self.x_plot_sd) - 1
         elif y_ind <= 0:
             y_ind = 0
         y_val = round(self.y_plot_sd[y_ind], 2)
@@ -559,15 +619,15 @@ class MainWindow(QMainWindow):
                 # t = self.t_plot_sd[int(index)]
             else:
                 # t = "-" * 11 + "---"
-                t = "-"*5
+                t = "-" * 5
 
         except IndexError:
             # t = "-" * 11 + "---"
             t = "-" * 5
         except KeyError:
-            t = "-"*5
+            t = "-" * 5
         if type(t) is not str:
-            #t = "-" * 11 + "---"
+            # t = "-" * 11 + "---"
             t = "-" * 5
         if self.wai_sd != 0:
             name = sensor_val[self.wai_sd]
@@ -576,7 +636,8 @@ class MainWindow(QMainWindow):
             name = "y"
             unit = ""
         # print(t)
-        self.graphWidget_sd.setTitle(f"<span style='font-size: 14pt; color: green'>t={t},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
+        self.graphWidget_sd.setTitle(
+            f"<span style='font-size: 14pt; color: green'>t={t},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
             f"<span style='font-size: 14pt; color: red'>{name}={y_val} {unit},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
             f"<span style='font-size: 11pt; color: gray'>x={round(index, 2)}</span>")
         self.vLine_sd.setPos(mousePoint.x())
@@ -587,13 +648,13 @@ class MainWindow(QMainWindow):
         mousePoint = self.vb.mapSceneToView(pos)
         index = mousePoint.x()
         if self.ui.checkBox.isChecked():
-            ind = int((index-self.x_plot[0]) * 10) + 8
+            ind = int((index - self.x_plot[0]) * 10) + 8
             if ind > 999:
                 ind = 999
             if ind < 0:
                 ind = 0
         else:
-            ind = int(index-self.x_plot[0])
+            ind = int(index - self.x_plot[0])
             if ind > 99:
                 ind = 99
             if ind < 0:
@@ -605,15 +666,16 @@ class MainWindow(QMainWindow):
             y_ind = 0'''
         # print(len(self.sensors[self.last_btn_clicked].x_time), index, ind)
         try:
-            t = self.sensors[self.last_btn_clicked].x_timestamp[int(index-100)]
+            t = self.sensors[self.last_btn_clicked].x_timestamp[int(index - 100)]
         except IndexError:
-            t = "-"*5
+            t = "-" * 5
         # print(t)
         y_val = round(self.y_plot[ind], 2)
         wai = self.sensors[self.last_btn_clicked].who_am_i
         name = sensor_val[wai]
         unit = sensor_unit[wai]
-        self.graphWidget.setTitle(f"<span style='font-size: 14pt; color: green'>t={t},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
+        self.graphWidget.setTitle(
+            f"<span style='font-size: 14pt; color: green'>t={t},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
             f"<span style='font-size: 14pt; color: red'>{name}={y_val} {unit},&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"
             f"<span style='font-size: 11pt; color: gray'>x={round(index, 2)}</span>")
         self.vLine.setPos(mousePoint.x())
