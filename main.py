@@ -1,5 +1,6 @@
 import datetime
 import math
+import multiprocessing
 import os
 import sys
 from sys import platform
@@ -939,6 +940,8 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    if platform == "win32":
+        multiprocessing.freeze_support()
     app = QApplication(sys.argv)
 
     window = MainWindow()

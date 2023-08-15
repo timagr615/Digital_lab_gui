@@ -44,13 +44,12 @@ def get_device_path() -> tuple[str, str] | None:
     elif platform == "win32":
         d = psutil.disk_partitions(all=False)
         for i in d:
-            # print(i)
             if "rw,removable" in i.opts and i.fstype == "FAT32":
                 # print(i)
                 path = i.mountpoint
                 onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
                 for file in onlyfiles:
-                    # print(file[0:4], file[-4:])
+                    #print(file[0:4], file[-4:])
                     if "appv" in file[0:4] and ".bin" in file[-4:]:
                         return path, file
         return None
