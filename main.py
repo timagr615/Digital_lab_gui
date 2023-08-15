@@ -2,6 +2,7 @@ import datetime
 import math
 import os
 import sys
+from sys import platform
 import time
 import csv
 import random
@@ -34,7 +35,7 @@ from chart import Chart
 import pyqtgraph as pg
 from usb_connections import communication
 from usb_connections.communication import sensor_unit, sensor_name, sensor_val
-from usb_connections.msc import get_device_path_linux, write_bin_file_to_device
+from usb_connections.msc import get_device_path, write_bin_file_to_device
 
 QtGui.QImageReader.setAllocationLimit(0)
 
@@ -59,7 +60,7 @@ class MscInfo(QThread):
     def run(self):
 
         try:
-            p = Process(target=self.disk)
+            p = Process(target=psutil.disk_partitions)
             p.start()
             # p.join()
             while p.is_alive():
@@ -68,7 +69,7 @@ class MscInfo(QThread):
         except TypeError as e:
             QThread.sleep(5)
             # print(f"MSC not loaded {e}, sleep 10 sec.")
-            p = Process(target=self.disk)
+            p = Process(target=psutil.disk_partitions)
             p.start()
             # p.join()
             while p.is_alive():
@@ -244,8 +245,10 @@ class MainWindow(QMainWindow):
         self.wai_sd = 0x0
 
     def btn_load_action(self):
-        path = get_device_path_linux()
-        # print(path)
+
+        path = get_device_path()
+
+
         if path is None:
             return
         file = QFileDialog.getOpenFileName(self)
@@ -587,6 +590,7 @@ class MainWindow(QMainWindow):
             date_sd = self.dl.sd_last_data.strftime('%Y-%m-%d')
             self.ui.label_sd_date.setText('Последняя запись ' + date_sd)
         self.ui.label_sd_size.setText(f'{self.dl.sd_last_data_size} кбайт')
+        del self.msc_info
 
 
     def clock(self):

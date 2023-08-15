@@ -1,5 +1,5 @@
 import os
-
+from sys import platform
 import psutil
 import re
 import subprocess
@@ -24,20 +24,36 @@ def check_device() -> bool:
     return False
 
 
-def get_device_path_linux() -> tuple[str, str] | None:
-    if not check_device():
-        return None
-    d = psutil.disk_partitions(all=False)
-    for i in d:
-        if "uid=1000,gid=1000,fmask=0022,dmask=0022,codepage=437," in i.opts:
+def get_device_path() -> tuple[str, str] | None:
+    if platform == "linux" or platform == "linux2":
+        # print(f"LINUX {platform}")
+        if not check_device():
+            return None
+        d = psutil.disk_partitions(all=False)
+        for i in d:
             # print(i)
-            path = i.mountpoint
-            onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
-            for file in onlyfiles:
-                # print(file[0:4], file[-4:])
-                if "appv" in file[0:4] and ".bin" in file[-4:]:
-                    return path, file
-    return None
+            if "uid=1000,gid=1000,fmask=0022,dmask=0022,codepage=437," in i.opts:
+                # print(i)
+                path = i.mountpoint
+                onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
+                for file in onlyfiles:
+                    # print(file[0:4], file[-4:])
+                    if "appv" in file[0:4] and ".bin" in file[-4:]:
+                        return path, file
+        return None
+    elif platform == "win32":
+        d = psutil.disk_partitions(all=False)
+        for i in d:
+            # print(i)
+            if "rw,removable" in i.opts and i.fstype == "FAT32":
+                # print(i)
+                path = i.mountpoint
+                onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
+                for file in onlyfiles:
+                    # print(file[0:4], file[-4:])
+                    if "appv" in file[0:4] and ".bin" in file[-4:]:
+                        return path, file
+        return None
 
 
 def write_bin_file_to_device(path_dev: str, file_name: str, data: bytes) -> bool:

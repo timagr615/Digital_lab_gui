@@ -16,8 +16,7 @@ from datetime import datetime
 from collections import deque
 from PySide6.QtCore import Qt, QTimer, Slot
 import pandas as pd
-
-from usb_connections.msc import write_bin_file_to_device, remove_file, get_device_path_linux
+from usb_connections.msc import write_bin_file_to_device, remove_file, get_device_path
 
 sensor_name = {0xBD: "Датчик шума", 0xBC: "Термопара", 0xBA: "Датчик тока",
                0xBE: "Датчик пульса", 0xBB: "Датчик  освещенности", 0xBF: "Датчик ультрафиолета",
@@ -440,7 +439,7 @@ class DlmmUSB:
             print("ATTRIBUTE ERR set date")
 
     def get_msc_info(self):
-        self.msc_path = get_device_path_linux()
+        self.msc_path = get_device_path()
         files = [f for f in os.listdir(self.msc_path[0]) if isfile(join(self.msc_path[0], f)) and f[-4:] == ".CSV"]
         dates = [f.date for f in self.sd_files]
         for file in files:
@@ -636,8 +635,11 @@ class DlmmUSB:
         if not self.device:
             return
         try:
-            self.device.write(0x1, [0x21, 0x35], 1000)
-            ret = self.device.read(0x81, 64, 1000)
+            # self.device.write(0x1, [0x21, 0x35], 1000)
+            # ret = self.device.read(0x81, 64, 1000)
+            for i in self.sd_files:
+                os.remove(i.path)
+                self.sd_files.clear()
         except usb.core.USBTimeoutError as e:
             print(f"clear sd Timeout error {e}")
         except usb.core.USBError as e:
